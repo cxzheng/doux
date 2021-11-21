@@ -1,0 +1,8 @@
+// list of check suppressions for cpplist
+
+missingInclude
+ConfigurationNotChecked
+toomanyconfigs
+unmatchedSuppression
+unknownMacro
+syntaxError

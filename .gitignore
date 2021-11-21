@@ -1,3 +1,5 @@
+*.swp
+
 # Prerequisites
 *.d
 
@@ -30,3 +32,9 @@
 *.exe
 *.out
 *.app
+
+# file automatically generated
+include/doux/doux.h
+
+build/
+*/target/
