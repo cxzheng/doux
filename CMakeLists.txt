@@ -14,7 +14,7 @@ option(DOUX_USE_FLOAT64  "Use double precision computation" OFF)
 option(DOUX_USE_CPPCHECK "Run cppcheck for static analysis" OFF)
 option(DOUX_USE_CLANG_TIDY "Run clang-tidy for static analysis" OFF)
 
-# option(DOUX_ENABLE_STDOUT "Display message on the console" ON)
+option(DOUX_ENABLE_STDOUT "Display messages on the console" ON)
 # option(DOUX_BUILD_BENCH  "Build benchmakrs" OFF)
 # option(DOUX_WITH_CUDA  "Build GPU simulation on CUDA" OFF)
 # option(DOUX_USE_TBB  "Use Intel TBB for parallel computing" OFF)
@@ -94,3 +94,5 @@ else()
   message(WARNING "clang-format not found. Not setting up format targets")
 endif()
 
+# ---------------------------------------------------
+add_subdirectory(src)
