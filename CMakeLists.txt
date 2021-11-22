@@ -19,7 +19,23 @@ option(DOUX_ENABLE_STDOUT "Display messages on the console" ON)
 # option(DOUX_WITH_CUDA  "Build GPU simulation on CUDA" OFF)
 # option(DOUX_USE_TBB  "Use Intel TBB for parallel computing" OFF)
 
-# ---------- Check for submodules ----------
+# ---------- Check for dependencies ----------
+include(FetchContent)
+
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG        origin/master
+)
+
+set(SPDLOG_BUILD_TESTING OFF CACHE BOOL " " FORCE)
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG        v1.9.2
+)
+
+FetchContent_MakeAvailable(fmt spdlog)
 
 # ----------------------------------
 if (DOUX_USE_FLOAT64)
