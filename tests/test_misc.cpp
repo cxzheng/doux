@@ -2,5 +2,7 @@
 
 int main() {
   doux::log_info("TEST IT");
+
+  UNIMPLEMENTED;
   return 0;
 }

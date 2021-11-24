@@ -135,6 +135,23 @@ typedef double double4_t __attribute__ ((vector_size (4 * sizeof(double))));  //
 #   define DOUX_UNLIKELY(...)       (__builtin_expect(!!(__VA_ARGS__), 0))
 #endif
 
+#include <fmt/core.h>
+
+#define UNIMPLEMENTED                                                   \
+    {                                                                   \
+      fmt::print(stderr, fmt::fg(fmt::color::red), "Reached unimplemented code"); \
+      fmt::print(stderr, " at {0:s}:L.{1:d}\n", __FILE__, __LINE__);    \
+      exit(-3);                                                         \
+      DOUX_UNREACHABLE;                                                 \
+    }
+
+#define SHOULD_NEVER_REACH(x)                                           \
+    {                                                                   \
+      fmt::print(stderr, fmt::fg(fmt::color::red), "Should never reach code"); \
+      fmt::print(stderr, " at {0:s}:L.{1:d}\n", __FILE__, __LINE__);    \
+      exit(x);                                                          \
+      DOUX_UNREACHABLE;                                                 \
+    }
 // clang-format on
 
 // Get rid of likely/unlikely, use [[likely/unlikely]] in C++ 20

@@ -29,6 +29,7 @@ FetchContent_Declare(
 )
 
 set(SPDLOG_BUILD_TESTING OFF CACHE BOOL " " FORCE)
+set(SPDLOG_BUILD_SHARED ON CACHE BOOL " " FORCE)
 FetchContent_Declare(
   spdlog
   GIT_REPOSITORY https://github.com/gabime/spdlog.git

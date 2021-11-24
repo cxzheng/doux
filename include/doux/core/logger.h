@@ -1,6 +1,5 @@
 #pragma once
 
-#include <source_location>
 #include "doux/core/platform.h"
 #include "fmt/color.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -61,9 +60,6 @@ DOUX_ALWAYS_INLINE void console_err(const FormatString &fmt_str,
   fmt::print(fmt::fg(fmt::color::red), "ERROR: ");
   fmt::print(fmt_str, std::forward<Args>(args)...);
 #endif
-}
-
-DOUX_ALWAYS_INLINE void unimplemented() {
 }
 
 NAMESPACE_END(doux)
