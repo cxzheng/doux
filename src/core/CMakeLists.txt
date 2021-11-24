@@ -10,8 +10,8 @@ target_include_directories(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME} 
   PUBLIC
-    fmt::fmt
     spdlog::spdlog
+    fmt::fmt
 )
 target_compile_features(${PROJECT_NAME}
   PUBLIC
