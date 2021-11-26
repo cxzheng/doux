@@ -24,9 +24,9 @@ using Vec2d = svec::SVector<double, 2>;
 using Vec3d = svec::SVector<double, 3>;
 using Vec4d = svec::SVector<double, 4>;
 using Vec8f = svec::SVector<float, 8>;
-using Vec2r = svec::SVector<Real, 2>;
-using Vec3r = svec::SVector<Real, 3>;
-using Vec4r = svec::SVector<Real, 4>;
+using Vec2r = svec::SVector<real_t, 2>;
+using Vec3r = svec::SVector<real_t, 3>;
+using Vec4r = svec::SVector<real_t, 4>;
 
 // used to locate a cell on a grid and grid res.
 template <size_t D_> using VecUL = doux::SVector<size_t, D_>;
