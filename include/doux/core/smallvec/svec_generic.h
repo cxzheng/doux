@@ -278,6 +278,8 @@ DOUX_SVEC_COMPOUND_OPERATOR(-)
 DOUX_SVEC_COMPOUND_OPERATOR(*)
 DOUX_SVEC_COMPOUND_OPERATOR(/)
 
+#undef DOUX_SVEC_COMPOUND_OPERATOR
+
 // --------------------------------------------------------------------------------------
 
 template <typename Value_, size_t Size_>
