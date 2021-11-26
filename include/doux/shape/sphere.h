@@ -1,9 +1,9 @@
 #pragma once
 
-#include "acacia/core/point.h"
+#include "doux/core/point.h"
 #include "cuboid.h"
 
-NAMESPACE_BEGIN(acacia::shape)
+NAMESPACE_BEGIN(doux::shape)
 
 // clang-format off
 template <typename T_, size_t D_>
@@ -27,22 +27,22 @@ class Sphere {
 #endif
   }
 
-  [[nodiscard]] ACA_ALWAYS_INLINE ACA_ATTR(pure) 
+  [[nodiscard]] DOUX_ALWAYS_INLINE DOUX_ATTR(pure) 
   T_ r() const noexcept {
     return rad_;
   }
 
-  [[nodiscard]] ACA_ALWAYS_INLINE ACA_ATTR(pure) 
+  [[nodiscard]] DOUX_ALWAYS_INLINE DOUX_ATTR(pure) 
   auto const& c() const noexcept {
     return ctr_;
   }
 
-  [[nodiscard]] ACA_ALWAYS_INLINE 
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
   auto axis_aligned_bb() const noexcept {
     return Cuboid<T_, D_>(ctr_ - rad_, ctr_ + rad_);
   }
 
-  [[nodiscard]] ACA_ALWAYS_INLINE 
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
   bool contain(const Point<T_, D_>& pt) const noexcept {
       //requires requires(T_ a) { { a*a } ->std::same_as<T_>; } {
     return (pt - ctr_).sqr().hsum() < r2_;
@@ -58,4 +58,4 @@ class Sphere {
 };
 // clang-format on
 
-NAMESPACE_END(acacia::shape)
+NAMESPACE_END(doux::shape)

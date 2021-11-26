@@ -1,7 +1,6 @@
 #pragma once
 
 #include "doux/core/point.h"
-#include "doux/io/core/format.h"
 
 NAMESPACE_BEGIN(doux::shape)
 

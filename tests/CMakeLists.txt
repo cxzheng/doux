@@ -1,7 +1,7 @@
 set(TEST_SRC 
-    test_svec.cpp
+    test_svec.cpp     test_shape.cpp
 )
-#    test_shape.cpp          test_fdtd_field.cpp
+#   test_fdtd_field.cpp
 #    test_gaussian.cpp       test_fdtd_src.cpp
 #    test_fdtd_sim.cpp       test_parser.cpp
 #    test_format.cpp         test_timer.cpp

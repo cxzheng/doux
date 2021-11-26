@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cassert>
-#include "acacia/core/point.h"
+#include "doux/core/point.h"
 
-NAMESPACE_BEGIN(acacia::shape)
+NAMESPACE_BEGIN(doux::shape)
 
 // elliptic shape: a*x^2 + b*y^2 + c*z^2 + ... = 1
 template <typename T_, size_t D_>
@@ -27,22 +27,22 @@ class Elliptic {
 #endif
   }
     
-  [[nodiscard]] ACA_ALWAYS_INLINE ACA_ATTR(pure) 
+  [[nodiscard]] DOUX_ALWAYS_INLINE DOUX_ATTR(pure) 
   auto const& c() const noexcept {
     return ctr_;
   }
 
   template<size_t DimId>
-  [[nodiscard]] ACA_ALWAYS_INLINE decltype(auto) coeff() const requires(D_ > DimId) { 
+  [[nodiscard]] DOUX_ALWAYS_INLINE decltype(auto) coeff() const requires(D_ > DimId) { 
     return coeff_.template val<DimId>();
   }
   template<size_t DimId>
-  [[nodiscard]] ACA_ALWAYS_INLINE decltype(auto) coeff(uint32_t id) const { 
+  [[nodiscard]] DOUX_ALWAYS_INLINE decltype(auto) coeff(uint32_t id) const { 
     assert(id < D_);
     return coeff_.val[id];
   }
 
-  [[nodiscard]] ACA_ALWAYS_INLINE 
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
   auto axis_aligned_bb() const noexcept {
     auto d = (SVector<T_, D_>((T_)1) / coeff_).sqrt();
     return Cuboid<T_, D_>(ctr_ - d, ctr_ + d);
@@ -59,4 +59,4 @@ class Elliptic {
   SVector<T_, D_> coeff_;
 };
 
-NAMESPACE_END(acacia::shape)
+NAMESPACE_END(doux::shape)
