@@ -17,7 +17,7 @@
 #define DOUX_CONCAT_NX(x, y) x##y
 #define DOUX_CONCAT(x, y)  DOUX_CONCAT_NX(x, y)
 
-using Real = ${doux_Float_Precision};
+using real_t = ${doux_Float_Precision};
 
 #if !defined(NAMESPACE_BEGIN)
 #   define NAMESPACE_BEGIN(name) namespace name {
