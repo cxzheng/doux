@@ -32,7 +32,7 @@ class UnitaryDistCFunc {
  private:
   SoftBody&       body_;
   uint32_t        v_;
-  Point3<real_t>  p0_;
+  Point3r         p0_;
 };
 
 NAMESPACE_END(doux::pd)

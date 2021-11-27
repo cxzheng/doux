@@ -71,10 +71,12 @@ template <typename T_>
 using Point2 = Point<T_, 2>;
 using Point2i = Point<int, 2>;
 using Point2d = Point<double, 2>;
+using Point2r = Point<real_t, 2>;
 
 template <typename T_>
 using Point3 = Point<T_, 3>;
 using Point3i = Point<int, 3>;
 using Point3d = Point<double, 3>;
+using Point3r = Point<real_t, 3>;
 
 NAMESPACE_END(doux)

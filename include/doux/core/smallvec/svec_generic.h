@@ -6,7 +6,6 @@
 #include <span>
 
 #include "doux/doux.h"
-//#include "doux/core/math_func.h"
 #include "svec_base.h"
 
 NAMESPACE_BEGIN(doux::svec)
