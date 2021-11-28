@@ -1,12 +1,13 @@
 #pragma once
 
+/*
+ * This header includes the definitions of PBD constraints
+ */
+
 #include "doux/doux.h"
 #include "doux/core/point.h"
 #include <span>
 
-/*
- * This header includes the definitions of PBD constraints
- */
 NAMESPACE_BEGIN(doux::pd)
 
 // Constrait function that keeps the distance of two vertices
@@ -19,6 +20,7 @@ class DistCFunc {
  private:
   SoftBody& body_;
   uint32_t  v_[2];  // vertex IDs
+  real_t    d0_;    // rest distance
 };
 
 // Constrait function that keeps the distance of a vertex from another fixed point.

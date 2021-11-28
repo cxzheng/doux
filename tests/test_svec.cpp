@@ -168,7 +168,7 @@ TEST_F(SVecTests, HProd) {
     auto r = vN_.hprod();
     double e = 1;
     for (int i = 0; i < N_; ++i) e *= vN_[i];
-    EXPECT_DOUBLE_EQ(e, r);
+    EXPECT_NEAR(e, r, std::abs(e*1E-12));
   }
   {
     auto r = v8_.hprod();
@@ -224,6 +224,29 @@ TEST(SVecTest, Round) {
     EXPECT_DOUBLE_EQ(1., r.x());
     EXPECT_DOUBLE_EQ(9., r.y());
     EXPECT_DOUBLE_EQ(3., r.z());
+  }
+}
+
+TEST(SVecTest, VecNormalize) {
+  doux::Vec3d p1(1., 2., 3.);
+  {
+    const auto nrm = p1.norm();
+    const auto nn = p1.normalize();
+
+    EXPECT_DOUBLE_EQ(nn.x(), 1. / nrm);
+    EXPECT_DOUBLE_EQ(nn.y(), 2. / nrm);
+    EXPECT_DOUBLE_EQ(nn.z(), 3. / nrm);
+  }
+
+  doux::Vec4d p2(1., 2., 3., 1.);
+  {
+    const auto nrm = p2.norm();
+    const auto nn = p2.normalize();
+
+    EXPECT_DOUBLE_EQ(nn.x(), 1. / nrm);
+    EXPECT_DOUBLE_EQ(nn.y(), 2. / nrm);
+    EXPECT_DOUBLE_EQ(nn.z(), 3. / nrm);
+    EXPECT_DOUBLE_EQ(nn.w(), 1. / nrm);
   }
 }
 
@@ -297,6 +320,9 @@ TEST(SVecTest, Vec2dOper) {
 }
 TEST(SVecTest, Vec3dOper) {
   doux::Vec3d p1(1., 2., 3.), p2(3., 2., 4.);
+  EXPECT_DOUBLE_EQ(p1.norm2(), 1+4.+9.);
+  EXPECT_DOUBLE_EQ(p1.norm(), std::sqrt(1+4.+9.));
+
   EXPECT_DOUBLE_EQ(p1.x(), 1.);
   EXPECT_DOUBLE_EQ(p1.y(), 2.);
   EXPECT_DOUBLE_EQ(p1.z(), 3.);
@@ -335,6 +361,8 @@ TEST(SVecTest, Vec3iOper) {
   EXPECT_EQ(0, p.x());
   EXPECT_EQ(1, p.y());
   EXPECT_EQ(0, p.z());
+
+  EXPECT_EQ(p1.norm2(), 1+4+9);
 }
 
 TEST(SVecTest, PosSize) {

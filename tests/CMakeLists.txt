@@ -1,5 +1,6 @@
 set(TEST_SRC 
     test_svec.cpp     test_shape.cpp
+    test_point.cpp
 )
 #   test_fdtd_field.cpp
 #    test_gaussian.cpp       test_fdtd_src.cpp

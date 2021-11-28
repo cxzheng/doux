@@ -15,7 +15,7 @@ option(DOUX_USE_CPPCHECK "Run cppcheck for static analysis" OFF)
 option(DOUX_USE_CLANG_TIDY "Run clang-tidy for static analysis" OFF)
 
 option(DOUX_ENABLE_STDOUT "Display messages on the console" ON)
-# option(DOUX_BUILD_BENCH  "Build benchmakrs" OFF)
+option(DOUX_BUILD_BENCH  "Build benchmakrs" OFF)
 # option(DOUX_WITH_CUDA  "Build GPU simulation on CUDA" OFF)
 # option(DOUX_USE_TBB  "Use Intel TBB for parallel computing" OFF)
 
@@ -44,7 +44,25 @@ FetchContent_Declare(
   GIT_TAG        release-1.11.0
 )
 
-FetchContent_MakeAvailable(fmt spdlog googletest)
+set(EXT_LIBS fmt spdlog googletest)
+
+# Enable Google benchmark if needed
+if (DOUX_BUILD_BENCH)
+  set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+  set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+  set(BENCHMARK_INSTALL_DOCS OFF CACHE BOOL "" FORCE)
+  set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
+
+  FetchContent_Declare(
+    benchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG        v1.6.0
+  )
+  
+  list(APPEND EXT_LIBS benchmark)
+endif()
+
+FetchContent_MakeAvailable(${EXT_LIBS})
 
 # ----------------------------------
 if (DOUX_USE_FLOAT64)
@@ -69,9 +87,9 @@ set(SRC_INC_DIR "${CMAKE_SOURCE_DIR}/include")
 set(SRC_IMPL_DIR "${CMAKE_SOURCE_DIR}/src")
 
 if (DOUX_BUILD_FOR_NATIVE) 
-  CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
+  CHECK_CXX_COMPILER_FLAG("-ffast-math -march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
   if(COMPILER_SUPPORTS_MARCH_NATIVE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -march=native")
   endif()
 endif()
 
@@ -125,4 +143,8 @@ add_subdirectory(src)
 if (DOUX_BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
+endif()
+
+if (DOUX_BUILD_BENCH)
+  add_subdirectory(bench)
 endif()

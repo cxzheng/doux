@@ -19,6 +19,8 @@ class Scene {
  private:
   /// a list of soft bodies to be simulated
   /// a list of fixed objects (e.g., ground)
+
+  CD_ coll_det_;	// collision detector
 };
 
 NAMESPACE_END(doux::pd)

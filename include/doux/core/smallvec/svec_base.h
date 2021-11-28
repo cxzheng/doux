@@ -126,8 +126,27 @@ struct SmallVecBase {
   }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
+  Derived normalize() const requires is_complex_or_floating_point_v<Value_> {
+    // on Clang 13, for AVX, this will emit vsqrtsd instruction, which is what we want
+    const auto s = (Value_)1 / std::sqrt(norm2());
+    return derived() * s;
+  }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
   Derived rcp() const requires is_complex_or_floating_point_v<Value_> {
     return derived()._rcp();
+  }
+
+  // square of the 2-norm
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  Value_ norm2() const requires std::is_arithmetic_v<Value_> {
+    return derived()._sqr()._hsum();
+  }
+
+  // return the 2-norm
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  Value_ norm() const requires std::is_arithmetic_v<Value_> {
+    return std::sqrt(norm2());
   }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 

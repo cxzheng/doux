@@ -165,7 +165,7 @@ struct SmallVecImpl<Value_, Size_, Derived_> : SmallVecBase<Value_, Size_, Deriv
   DOUX_ALWAYS_INLINE Derived _sqr() const 
       requires std::is_arithmetic_v<Value_> {
     Derived ret;
-    for (size_t i = 0;i < Size_;++ i) ret.data_[i] = sqr(data_[i]);
+    for (size_t i = 0;i < Size_;++ i) ret.data_[i] = data_[i]*data_[i];
     return ret;
   }
 
