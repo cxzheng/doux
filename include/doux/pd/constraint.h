@@ -6,6 +6,7 @@
 
 #include "doux/doux.h"
 #include "doux/core/point.h"
+#include "softbody.h"
 #include <random>
 #include <span>
 
@@ -14,9 +15,25 @@ NAMESPACE_BEGIN(doux::pd)
 // Constrait function that keeps the distance of two vertices
 class DistCFunc {
  public:
+  // ------ constructors ------
+  DistCFunc() = delete;
+  DistCFunc(const DistCFunc&) = delete;
+  DistCFunc(DistCFunc&&) = delete;
+  DistCFunc& operator = (const DistCFunc&) = delete;
+  DistCFunc& operator = (DistCFunc&&) = delete;
+
+  DistCFunc(SoftBody& sb, uint32_t v1, uint32_t v2, real_t d0) :
+      body_(sb), v_{v1, v2}, d0_(d0) {
+#ifndef NDEBUG
+    if ( d0 < 0 ) {
+      throw std::invalid_argument(fmt::format("Provided d0 value must be positive: {}", d0));
+    }
+#endif
+  }
+
   [[nodiscard]] real_t c() const;
 
-  void grad(std::span<real_t> grad_ret) const;
+  void grad(std::span<real_t> grad_ret);
 
  private:
   SoftBody& body_;
@@ -28,6 +45,7 @@ class DistCFunc {
   std::minstd_rand rg_{123456789};
 };
 
+#if 0
 // Constrait function that keeps the distance of a vertex from another fixed point.
 class UnitaryDistCFunc {
 
@@ -41,6 +59,7 @@ class UnitaryDistCFunc {
   uint32_t        v_;
   Point3r         p0_;
 };
+#endif
 
 NAMESPACE_END(doux::pd)
 

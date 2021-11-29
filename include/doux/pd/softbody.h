@@ -24,6 +24,9 @@ class SoftBody {
   [[nodiscard]] DOUX_ALWAYS_INLINE size_t num_vtx() const noexcept { return pos_.size(); }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
+  std::vector<Point3r>& vtx_pos() { return pos_; }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
   decltype(auto) vtx_pos(size_t vid) const { 
 #ifndef NDEBUG
     return ( vid >= pos_.size() ) ? throw std::out_of_range(fmt::format(

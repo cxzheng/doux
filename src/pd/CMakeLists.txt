@@ -1,7 +1,7 @@
 project(pd)
 
 add_library(${PROJECT_NAME} OBJECT
-  softbody.cpp
+  softbody.cpp      constraint.cpp
 )
 add_library(doux::pd ALIAS ${PROJECT_NAME})
 
