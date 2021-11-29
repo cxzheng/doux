@@ -6,6 +6,7 @@
 
 #include "doux/doux.h"
 #include "doux/core/point.h"
+#include <random>
 #include <span>
 
 NAMESPACE_BEGIN(doux::pd)
@@ -21,6 +22,10 @@ class DistCFunc {
   SoftBody& body_;
   uint32_t  v_[2];  // vertex IDs
   real_t    d0_;    // rest distance
+
+  // NOTE: use a simple random generator to handle the degenerated case
+  // where the two vertices are colocated. 
+  std::minstd_rand rg_{123456789};
 };
 
 // Constrait function that keeps the distance of a vertex from another fixed point.

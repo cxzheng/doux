@@ -59,6 +59,31 @@ class Gaussian {
   /// $$
   T_ denom_;
 };
+
+// --------------------------------------------------------------------------
+
+// Epsilon value for floating point comparison
+template <typename T>
+struct eps {
+  static constexpr T v;
+};
+
+template <>
+struct eps<float> {
+  static constexpr float v = (float)1E-7;
+};
+
+template <>
+struct eps<double> {
+  static constexpr float v = 1E-12;
+};
+
+
+// Linear congruential generator:
+// This is a simple, quick, but quite approximated random generator 
+// (see https://en.wikipedia.org/wiki/Linear_congruential_generator) 
+// 
+
 // clang-format on
 
 NAMESPACE_END(doux)

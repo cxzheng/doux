@@ -11,6 +11,15 @@ NAMESPACE_BEGIN(doux::pd)
 
 class SoftBody {
  public:
+  // ------ constructors ------
+  SoftBody() = delete;
+  SoftBody(const SoftBody&) = delete;
+  SoftBody(SoftBody&&) = delete;
+  SoftBody& operator = (const SoftBody&) = delete;
+  SoftBody& operator = (SoftBody&&) = delete;
+
+  SoftBody(std::vector<Point3r>&& pos);
+
   // return total number of vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE size_t num_vtx() const noexcept { return pos_.size(); }
 
