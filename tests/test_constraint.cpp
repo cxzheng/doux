@@ -44,7 +44,7 @@ TEST(TestPDConstraint, DistCons) {
   pos[1].z() += eps*2;
   auto z2 = func.c();
 #if DOUX_USE_FLOAT64
-  EXPECT_NEAR(grad[5], (v2-v1)/(2*eps), 1E-7);
+  EXPECT_NEAR(grad[5], (z2-z1)/(2*eps), 1E-7);
 #else
   EXPECT_NEAR(grad[5], (z2-z1)/(2*eps), 1E-3);
 #endif
