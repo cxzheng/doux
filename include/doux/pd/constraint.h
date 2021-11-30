@@ -6,11 +6,12 @@
 
 #include "doux/doux.h"
 #include "doux/core/point.h"
-#include "softbody.h"
 #include <random>
 #include <span>
 
 NAMESPACE_BEGIN(doux::pd)
+
+class SoftBody;
 
 // Constrait function that keeps the distance of two vertices
 class DistCFunc {
@@ -45,11 +46,25 @@ class DistCFunc {
   std::minstd_rand rg_{123456789};
 };
 
-#if 0
 // Constrait function that keeps the distance of a vertex from another fixed point.
 class UnitaryDistCFunc {
-
  public:
+  // ------ constructors ------
+  UnitaryDistCFunc() = delete;
+  UnitaryDistCFunc(const UnitaryDistCFunc&) = delete;
+  UnitaryDistCFunc(UnitaryDistCFunc&&) = delete;
+  UnitaryDistCFunc& operator = (const UnitaryDistCFunc&) = delete;
+  UnitaryDistCFunc& operator = (UnitaryDistCFunc&&) = delete;
+
+  UnitaryDistCFunc(SoftBody& sb, uint32_t v, const Point3r& p0, real_t d0) :
+      body_(sb), v_{v}, p0_{p0}, d0_{d0} {
+#ifndef NDEBUG
+    if ( d0 < 0 ) {
+      throw std::invalid_argument(fmt::format("Provided d0 value must be positive: {}", d0));
+    }
+#endif
+  }
+
   [[nodiscard]] real_t c() const;
 
   void grad(std::span<real_t> grad_ret) const;
@@ -58,8 +73,8 @@ class UnitaryDistCFunc {
   SoftBody&       body_;
   uint32_t        v_;
   Point3r         p0_;
+  real_t          d0_;
 };
-#endif
 
 NAMESPACE_END(doux::pd)
 

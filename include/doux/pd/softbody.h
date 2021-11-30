@@ -39,6 +39,9 @@ class SoftBody {
   }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
+  std::vector<Vec3r>& vtx_vel() { return vel_; }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
   decltype(auto) vtx_vel(size_t vid) const { 
 #ifndef NDEBUG
     return ( vid >= vel_.size() ) ? throw std::out_of_range(fmt::format(

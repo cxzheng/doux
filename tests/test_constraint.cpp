@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "common.h"
+#include "doux/pd/softbody.h"
 #include "doux/pd/constraint.h"
 
 TEST(TestPDConstraint, DistCons) {

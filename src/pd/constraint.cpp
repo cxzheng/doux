@@ -1,3 +1,4 @@
+#include "doux/pd/softbody.h"
 #include "doux/pd/constraint.h"
 
 NAMESPACE_BEGIN(doux::pd)
