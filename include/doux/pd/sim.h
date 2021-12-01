@@ -47,10 +47,9 @@ class XPBDSim {
   size_t step();
 
  private:
-  SimStats status_;
-
-  // to store external force
-  std::vector<Vec3r>    ext_f_;
+  SimStats  status_;
+  Scene_    scene_;   // simulation scene
+  ExtForce_ ext_f_;   // external force
 };
 
 // --------------------------------------------------------------------------------
@@ -59,6 +58,7 @@ template <class Scene_>
 size_t XPBDSim<Scene_>::step() {
   // timestep by external forces
   if constexpr (!std::is_same_v<ExtForce_, std::monostate>) {
+    ext_f_.step_vel();
   }
 
   // generate external constraints

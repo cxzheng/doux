@@ -1,6 +1,15 @@
 # This is the main CMake build file used to compile doux
 
 cmake_minimum_required (VERSION 3.20.0)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_BINARY_DIR})
+
+include(HunterGate)
+HunterGate(
+  URL "https://github.com/cpp-pm/hunter/archive/v0.23.318.tar.gz"
+  SHA1 "0475be76dbf51385790bbe96be57279e2ff0861d"
+)
+
 project(doux)
 
 set(doux_VERSION_MAJOR 0)
@@ -71,8 +80,6 @@ if (DOUX_USE_FLOAT64)
 else()
   set(doux_Float_Precision float)
 endif()
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_BINARY_DIR})
 
 if (POLICY CMP0110)
   cmake_policy(SET CMP0110 NEW) # add_test() supports arbitrary characters

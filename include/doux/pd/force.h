@@ -8,10 +8,10 @@ class MassForce {
  public:
 
   // explicit euler timestepping the velocity
-  void apply_on_vel(SoftBody& body, real_t dt) const;
+  void step_vel(SoftBody& body, real_t dt) const;
 
  private:
-  Vec3r g_;
+  Vec3r g_; // gravitational coefficient
 };
 
 NAMESPACE_END(doux::pd)

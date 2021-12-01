@@ -6,6 +6,7 @@
 
 #include <vector>
 #include "doux/core/point.h"
+#include "doux/linalg/num_types.h"
 
 NAMESPACE_BEGIN(doux::pd)
 
@@ -73,6 +74,12 @@ class SoftBody {
   std::vector<real_t>   mass_;  // mass
 
   // list of constraints for generating internal forces
+
+  // surface vertex information for collision detection
+  // This is a M x N matrix, where M is the number of surface faces,
+  // and N is the number of vertices on each face. E.g., for triangle 
+  // surface mesh, N = 3
+  linalg::matrix_ui_t  faces_;
 };
 
 NAMESPACE_END(doux::pd)

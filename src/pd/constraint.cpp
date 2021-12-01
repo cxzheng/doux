@@ -35,4 +35,10 @@ void DistCFunc::grad(std::span<real_t> grad_ret) {
   grad_ret[5] = -ret.z();
 }
 
+// -------------------------------------------------------------------------------
+
+[[nodiscard]] real_t UnitaryDistCFunc::c() const {
+  return (body_.vtx_pos(v_) - p0_).norm() - d0_;
+}
+
 NAMESPACE_END(doux::pd)

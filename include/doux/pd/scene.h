@@ -6,6 +6,7 @@
 
 #include <variant>
 #include "doux/doux.h"
+#include "softbody.h"
 
 NAMESPACE_BEGIN(doux::pd)
 
@@ -18,6 +19,8 @@ class Scene {
 
  private:
   /// a list of soft bodies to be simulated
+  std::vector<SoftBoday> sb_;
+
   /// a list of fixed objects (e.g., ground)
 
   CD_ coll_det_;	// collision detector
