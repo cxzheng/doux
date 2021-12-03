@@ -64,9 +64,7 @@ class Gaussian {
 
 // Epsilon value for floating point comparison
 template <typename T>
-struct eps {
-  static constexpr T value;
-};
+struct eps {};
 
 template <>
 struct eps<float> {
