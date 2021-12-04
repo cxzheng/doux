@@ -31,6 +31,10 @@ struct SimStats {
   [[nodiscard]] DOUX_ALWAYS_INLINE real_t t() const noexcept {
     return dt * finished_steps;
   }
+
+  DOUX_ALWAYS_INLINE void step() {
+    ++ finished_steps;
+  }
 };
 
 /*
@@ -58,13 +62,30 @@ template <class Scene_>
 size_t XPBDSim<Scene_>::step() {
   // timestep by external forces
   if constexpr (!std::is_same_v<ExtForce_, std::monostate>) {
-    ext_f_.step_vel();
+    for(auto& sb : scene_.deformables()) {
+      ext_f_.step_vel(sb, status_.dt);
+      // possibly damp the velocity
+      ext_f_.step_pos(sb, status_.dt);
+    }
   }
 
-  // generate external constraints
+  status_.step();
+  // timestep preset object motion
+  const real_t t = status_.t();
+  for(auto& sb : scene_.deformables()) {
+    sb.update_scripted(t);
+  }
+
+  if constexpr (!std::is_same_v<ExtCons_, std::monostate>) {
+    // detect collisions in the scene
+    // generate external constraints
+    UNIMPLEMENTED
+  }
 
   // substep iterations
   for(auto i = 0;i < status_.num_iter;++ i) {
+    // go over all constraints to project particle positions
+    // TODO: this can be implemented in parallel
   }
 
   // update vel. and pos

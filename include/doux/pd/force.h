@@ -10,6 +10,9 @@ class MassForce {
   // explicit euler timestepping the velocity
   void step_vel(SoftBody& body, real_t dt) const;
 
+  // explicit euler timestepping softbody vertex positions
+  void step_pos(SoftBody& body, real_t dt) const;
+
  private:
   Vec3r g_; // gravitational coefficient
 };

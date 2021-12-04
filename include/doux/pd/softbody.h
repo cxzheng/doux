@@ -10,16 +10,16 @@
 
 NAMESPACE_BEGIN(doux::pd)
 
-class SoftBody {
+class Softbody {
  public:
   // ------ constructors ------
-  SoftBody() = delete;
-  SoftBody(const SoftBody&) = delete;
-  SoftBody(SoftBody&&) = delete;
-  SoftBody& operator = (const SoftBody&) = delete;
-  SoftBody& operator = (SoftBody&&) = delete;
+  Softbody() = delete;
+  Softbody(const Softbody&) = delete;
+  Softbody(Softbody&&) = delete;
+  Softbody& operator = (const Softbody&) = delete;
+  Softbody& operator = (Softbody&&) = delete;
 
-  SoftBody(std::vector<Point3r>&& pos);
+  Softbody(std::vector<Point3r>&& pos);
 
   // return total number of vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE size_t num_vtx() const noexcept { return pos_.size(); }
@@ -66,20 +66,36 @@ class SoftBody {
 #endif
   }
 
- private:
+ protected:
   // list of vertices sampled on the body (volume or cloth)
   // position, velocity, mass
   std::vector<Point3r>  pos_;   // vertex positions
   std::vector<Vec3r>    vel_;   // vertex velocity
   std::vector<real_t>   mass_;  // mass
 
-  // list of constraints for generating internal forces
-
   // surface vertex information for collision detection
   // This is a M x N matrix, where M is the number of surface faces,
   // and N is the number of vertices on each face. E.g., for triangle 
   // surface mesh, N = 3
-  linalg::matrix_ui_t  faces_;
+  linalg::matrix_i_t  faces_;
+};
+
+// -----------------------------------------------------------------------
+
+class MotiveBody : public Softbody {
+ public:
+  using MotionFunc = std::function<Point3r(uint32_t, Point3r, real_t)>;
+
+  // update the position of scripted vertices, if any
+  void update_scripted(real_t t);
+
+ private:
+  uint32_t    num_fixed_{0};         // number of fixed vertices
+  std::vector<Point3r>    p0_;       // initial positions of scripted vertices
+  std::vector<MotionFunc> script_;   // scripted vertex motion, one for each scripted vertex
+
+  // list of constraints for generating internal forces
+
 };
 
 NAMESPACE_END(doux::pd)

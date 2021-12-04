@@ -9,27 +9,31 @@
 
 NAMESPACE_BEGIN(doux::pd)
 
-class MotionConfig {
+template <size_t D_>
+class MotionPreset {
  public:
   // set the vertex indexed by vid to be fixed
   void fix_vertex(uint32_t vid);
 
- private:
-  SoftBody& body_;
-};
-
-class MotionPreset {
- public:
+  // set the vertex vid to move as scripted
+  void script_vertex(uint32_t vid, std::function<Point3r(uint32_t, Point3r, real_t)>&& script);
 
  private:
-  // reference to the softbody 
-  SoftBody& body_;
+  const Mesh<D_>& mesh_;
+  size_t          n_fixed_ {0};
 
-  uint32_t num_fixed_{0};      // number of fixed vertices
-  uint32_t num_scripted_{0};   // number of scripted vertices
+  // vertex label: 
+  // 0: free vertices
+  // 1: fixed 
+  // 2: scripted
+  std::vector<uint32_t> tag_;
 };
 
-// Consumes the motion configuration and produce immutable motion preset for simulation.
+// consumes the softbody setup and produce immutable motion preset for simulation.
 // This ensures that once the simulation starts, the motion preset won't be changed.
+template <size_t D_>
+std::tuple<MotiveSoftbody, std::optional<std::vector<uint32_t>>> 
+build_softbody(MotionPreset<D_>&& preset) {
+}
 
 NAMESPACE_END(doux::pd)
