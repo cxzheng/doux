@@ -39,7 +39,7 @@ class Softbody {
   std::vector<Point3r>& vtx_pos() { return pos_; }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
-  decltype(auto) vtx_pos(size_t vid) const { 
+  auto const& vtx_pos(size_t vid) const { 
 #ifndef NDEBUG
     return ( vid >= pos_.size() ) ? throw std::out_of_range(fmt::format(
         "vtx_pos(vid) call: out of range access. Tried to access index {0:d}, "
@@ -54,7 +54,7 @@ class Softbody {
   std::vector<Vec3r>& vtx_vel() { return vel_; }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
-  decltype(auto) vtx_vel(size_t vid) const { 
+  auto const& vtx_vel(size_t vid) const { 
 #ifndef NDEBUG
     return ( vid >= vel_.size() ) ? throw std::out_of_range(fmt::format(
         "vtx_vel(vid) call: out of range access. Tried to access index {0:d}, "
@@ -96,7 +96,7 @@ class Softbody {
 // Extend the softbody to enable fixed and scripted vertices
 class MotiveBody : public Softbody {
  public:
-  using MotionFunc = std::function<Point3r(Point3r, real_t)>;
+  using MotionFunc = std::function<Point3r(const Point3r&, real_t)>;
 
   template<typename POS_, typename FS_>
   MotiveBody(POS_&& pos, FS_&& fs) : 
@@ -109,7 +109,9 @@ class MotiveBody : public Softbody {
              std::vector<MotionFunc>&& script) : 
       Softbody{std::forward<POS_>(pos), std::forward<FS_>(fs)},
       num_fixed_{nfixed}, num_restricted_{nfixed + p0.size()},
-      p0_{std::move(p0)}, script_{std::move(script)} {}
+      p0_{std::move(p0)}, script_{std::move(script)} {
+    assert(p0_.size() == script_.size());
+  }
 
   MotiveBody() = delete;
   MotiveBody(const MotiveBody&) = delete;
@@ -121,6 +123,16 @@ class MotiveBody : public Softbody {
 
   // update the position of scripted vertices, if any
   void update_scripted(real_t t);
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  size_t num_fixed_vs() const { return num_fixed_; }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  size_t num_scripted_vs() const { return p0_.size(); }
+
+  // return the initial positions of scripted vertices
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  auto const& init_scripted_pos() const { return p0_; }
 
  protected:
   size_t    num_fixed_{0};         // number of fixed vertices

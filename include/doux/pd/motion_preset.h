@@ -20,7 +20,7 @@ template <size_t D_>
 requires(D_ > 1 && D_ < 4)
 class MotionPreset {
  public:
-  using MotionFunc = std::function<Point3r(Point3r, real_t)>;
+  using MotionFunc = std::function<Point3r(const Point3r&, real_t)>;
 
   MotionPreset() = delete;
   MotionPreset(MotionPreset&) = delete;
@@ -52,6 +52,9 @@ class MotionPreset {
     n_fixed_ += (vtag_[vid]==0);
     vtag_[vid] = 1;
   }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  const std::unordered_map<uint32_t, MotionFunc>& vertex_script() const { return script_; }
 
   // set the vertex vid to move as scripted
   void script_vertex(uint32_t vid, MotionFunc&& script) {
@@ -119,7 +122,8 @@ NAMESPACE_BEGIN(internal)
 // D_ = 2: tri mesh
 // D_ = 3: tet mesh
 template <size_t D_>
-shape::Mesh<D_> ordered_mesh(const std::vector<uint32_t>& idmap, const shape::Mesh<D_>& mesh) {
+std::tuple<shape::Mesh<D_>, std::vector<uint32_t>> 
+ordered_mesh(const std::vector<uint32_t>& idmap, const shape::Mesh<D_>& mesh) {
   auto const& x = mesh.vertices();
   auto const& e = mesh.elements();
 
@@ -142,12 +146,13 @@ shape::Mesh<D_> ordered_mesh(const std::vector<uint32_t>& idmap, const shape::Me
       ordered_e(i, j) = inv_map[e(i, j)];
     }
 
-  return shape::Mesh<D_>(std::move(ordered_x), std::move(ordered_e));
+  return {shape::Mesh<D_>(std::move(ordered_x), std::move(ordered_e)), std::move(inv_map)};
 }
 
 NAMESPACE_END(internal)
 
-// consumes the softbody setup and produce immutable motion preset for simulation.
+// Takes a MotionPreset and produces the softbody with ordered vertices (if there exist 
+// fixed or scripted vertices)
 // This ensures that once the simulation starts, the motion preset won't be changed.
 template <size_t D_>
 requires(D_ > 1 && D_ < 4)
@@ -168,16 +173,30 @@ build_softbody(const MotionPreset<D_>& preset) {
   } // end if id_map
 
   // create another mesh that uses the recorded vertices
-  auto ordered_msh = internal::ordered_mesh(id_map.value(), preset.mesh());
+  // inv_map[i]: the i-th vertex of origional mesh --> vertex ID of the ordered mesh
+  auto [ordered_msh, inv_map] = internal::ordered_mesh(id_map.value(), preset.mesh());
+  auto const& vs = ordered_msh.vertices();
 
   // populate p0: initial positions of scripted vertices
-  std::vector<Point3r> p0(preset.num_scripted_vs());
+  std::vector<Point3r> p0; 
+  p0.reserve(preset.num_scripted_vs());
+  const size_t nfixed = preset.num_fixed_vs();
+  const size_t ni = nfixed + preset.num_scripted_vs();
+  for(size_t i = nfixed;i < ni;++ i) {
+    p0.emplace_back(vs(i, 0), vs(i, 1), vs(i, 2));
+  }
+
   // populate script
-  std::vector<typename MotionPreset<D_>::MotionFunc> script;
+  auto const& sc = preset.vertex_script();
+  std::vector<typename MotionPreset<D_>::MotionFunc> script(sc.size());
+  for(auto const& v : sc) {
+    assert(inv_map[v.first] >= nfixed && inv_map[v.first] < ni);
+    script[inv_map[v.first] - nfixed] = v.second;
+  }
 
   if constexpr (D_ == 2) {
       return {MotiveBody(ordered_msh.vtx_pos(), ordered_msh.elements(), 
-                         preset.num_fixed_vs(), std::move(p0), std::move(script)), 
+                         nfixed, std::move(p0), std::move(script)), 
               std::move(ordered_msh)};
   } else {
     // extract surface mesh

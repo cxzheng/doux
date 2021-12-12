@@ -49,8 +49,7 @@ class Mesh {
   [[nodiscard]] DOUX_ALWAYS_INLINE
   size_t num_vertices() const { return x_.rows(); }
 
-  [[nodiscard]]
-  std::vector<Point3r> vtx_pos() const;
+  [[nodiscard]] std::vector<Point3r> vtx_pos() const;
 
  private:
   // vertex positions
