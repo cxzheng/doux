@@ -1,11 +1,9 @@
 set(TEST_SRC 
     test_svec.cpp       test_shape.cpp
     test_point.cpp      test_softbody.cpp
-    test_constraint.cpp
+    test_constraint.cpp test_motion_preset.cpp
+    test_mesh.cpp       test_motion_preset.cpp
 )
-#    test_gaussian.cpp       test_fdtd_src.cpp
-#    test_mat_space.cpp      test_matrix.cpp
-#    test_pml_params.cpp     test_rcwa_layer.cpp
 
 set(TEST_LINK_LIBS
     doux::core        doux::pd

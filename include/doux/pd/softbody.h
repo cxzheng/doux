@@ -5,21 +5,32 @@
  */
 
 #include <vector>
+#include "doux/core/platform.h"
 #include "doux/core/point.h"
 #include "doux/linalg/num_types.h"
 
 NAMESPACE_BEGIN(doux::pd)
 
+// Maintain a basic data structure to describe a softbody
 class Softbody {
  public:
   // ------ constructors ------
   Softbody() = delete;
   Softbody(const Softbody&) = delete;
-  Softbody(Softbody&&) = delete;
+  Softbody(Softbody&&) = default;
   Softbody& operator = (const Softbody&) = delete;
-  Softbody& operator = (Softbody&&) = delete;
+  Softbody& operator = (Softbody&&) = default;
 
-  Softbody(std::vector<Point3r>&& pos);
+  template<typename POS_, typename FS_>
+  Softbody(POS_&& pos, FS_&& fs) : 
+      pos_{std::forward<POS_>(pos)}, faces_{std::forward<FS_>(fs)} {
+    assert(faces_.cols() == 3 && "faces must be a N x 3 index matrix");
+
+    vel_.resize(pos_.size());
+    mass_.resize(pos_.size(), (real_t)1); // initalize with unit mass
+
+    for_each(vel_.begin(), vel_.end(), [] (auto& v) { v.set_zero(); });
+  }
 
   // return total number of vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE size_t num_vtx() const noexcept { return pos_.size(); }
@@ -82,20 +93,51 @@ class Softbody {
 
 // -----------------------------------------------------------------------
 
+// Extend the softbody to enable fixed and scripted vertices
 class MotiveBody : public Softbody {
  public:
-  using MotionFunc = std::function<Point3r(uint32_t, Point3r, real_t)>;
+  using MotionFunc = std::function<Point3r(Point3r, real_t)>;
+
+  template<typename POS_, typename FS_>
+  MotiveBody(POS_&& pos, FS_&& fs) : 
+      Softbody{std::forward<POS_>(pos), std::forward<FS_>(fs)} {}
+
+  // This constructor will be called by `build_softbody` in motion_preset.h
+  template<typename POS_, typename FS_>
+  MotiveBody(POS_&& pos, FS_&& fs, size_t nfixed, 
+             std::vector<Point3r>&& p0,
+             std::vector<MotionFunc>&& script) : 
+      Softbody{std::forward<POS_>(pos), std::forward<FS_>(fs)},
+      num_fixed_{nfixed}, num_restricted_{nfixed + p0.size()},
+      p0_{std::move(p0)}, script_{std::move(script)} {}
+
+  MotiveBody() = delete;
+  MotiveBody(const MotiveBody&) = delete;
+  MotiveBody(MotiveBody&&) = default;
+  MotiveBody& operator = (const MotiveBody&) = delete;
+  MotiveBody& operator = (MotiveBody&&) = default;
+
+  // -------------------------------------------------
 
   // update the position of scripted vertices, if any
   void update_scripted(real_t t);
 
- private:
-  uint32_t    num_fixed_{0};         // number of fixed vertices
+ protected:
+  size_t    num_fixed_{0};         // number of fixed vertices
+  size_t    num_restricted_{0};    // number of fixed + number of scripted
   std::vector<Point3r>    p0_;       // initial positions of scripted vertices
   std::vector<MotionFunc> script_;   // scripted vertex motion, one for each scripted vertex
+};
 
+// -----------------------------------------------------------------------
+
+// Extend to use constraints to generate internal forces, so they can be used
+// in PBD framework.
+class PBDBody : public MotiveBody {
+ public:
+
+ private:
   // list of constraints for generating internal forces
-
 };
 
 NAMESPACE_END(doux::pd)

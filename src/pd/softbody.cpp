@@ -2,12 +2,8 @@
 
 NAMESPACE_BEGIN(doux::pd)
 
-SoftBody::SoftBody(std::vector<Point3r>&& pos) :
-        pos_(std::move(pos)) {
-  vel_.resize(pos_.size());
-  mass_.resize(pos_.size(), (real_t)1); // initalize with unit mass
-
-  for_each(vel_.begin(), vel_.end(), [] (auto& v) { v.set_zero(); });
+void MotiveBody::update_scripted(real_t t) {
+  UNIMPLEMENTED 
 }
 
 NAMESPACE_END(doux::pd)

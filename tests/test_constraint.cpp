@@ -10,8 +10,9 @@ TEST(TestPDConstraint, DistCons) {
   std::vector<Point3r> ps;
   ps.emplace_back((real_t)1, (real_t)2, (real_t)3);
   ps.emplace_back((real_t)2, (real_t)1, (real_t)3);
+  linalg::matrix_i_t fs(1, 3);
 
-  pd::SoftBody sb(std::move(ps));
+  pd::Softbody sb(std::move(ps), std::move(fs));
 
   pd::DistCFunc func(sb, 0, 1, (real_t)1.);
 

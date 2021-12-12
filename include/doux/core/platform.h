@@ -136,6 +136,7 @@ typedef double double4_t __attribute__ ((vector_size (4 * sizeof(double))));  //
 #endif
 
 #include <fmt/core.h>
+#include <fmt/color.h>
 
 #define UNIMPLEMENTED                                                   \
     {                                                                   \

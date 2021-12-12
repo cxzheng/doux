@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include "doux/core/point.h"
+#include "doux/core/format.h"
 
 NAMESPACE_BEGIN(doux::shape)
 

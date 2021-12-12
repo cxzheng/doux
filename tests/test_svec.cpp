@@ -149,7 +149,7 @@ TEST_F(SVecTests, HSum) {
     double e = 0;
     for(int i = 0;i < 8;++ i) e += v8_[i];
     //EXPECT_FLOAT_EQ(e, r);
-    EXPECT_NEAR(e, r, 1E-6);
+    EXPECT_NEAR(e, r, 1E-6*std::abs(e));
   }
 }
 TEST_F(SVecTests, HProd) {

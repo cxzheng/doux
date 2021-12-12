@@ -11,7 +11,7 @@
 
 NAMESPACE_BEGIN(doux::pd)
 
-class SoftBody;
+class Softbody;
 
 // Constrait function that keeps the distance of two vertices
 class DistCFunc {
@@ -23,7 +23,7 @@ class DistCFunc {
   DistCFunc& operator = (const DistCFunc&) = delete;
   DistCFunc& operator = (DistCFunc&&) = delete;
 
-  DistCFunc(SoftBody& sb, uint32_t v1, uint32_t v2, real_t d0) :
+  DistCFunc(Softbody& sb, uint32_t v1, uint32_t v2, real_t d0) :
       body_(sb), v_{v1, v2}, d0_(d0) {
 #ifndef NDEBUG
     if ( d0 < 0 ) {
@@ -37,7 +37,7 @@ class DistCFunc {
   void grad(std::span<real_t> grad_ret);
 
  private:
-  SoftBody& body_;
+  Softbody& body_;
   uint32_t  v_[2];  // vertex IDs
   real_t    d0_;    // rest distance
 
@@ -56,7 +56,7 @@ class UnitaryDistCFunc {
   UnitaryDistCFunc& operator = (const UnitaryDistCFunc&) = delete;
   UnitaryDistCFunc& operator = (UnitaryDistCFunc&&) = delete;
 
-  UnitaryDistCFunc(SoftBody& sb, uint32_t v, const Point3r& p0, real_t d0) :
+  UnitaryDistCFunc(Softbody& sb, uint32_t v, const Point3r& p0, real_t d0) :
       body_(sb), v_{v}, p0_{p0}, d0_{d0} {
 #ifndef NDEBUG
     if ( d0 < 0 ) {
@@ -70,7 +70,7 @@ class UnitaryDistCFunc {
   void grad(std::span<real_t> grad_ret) const;
 
  private:
-  SoftBody&       body_;
+  Softbody&       body_;
   uint32_t        v_;
   Point3r         p0_;
   real_t          d0_;
