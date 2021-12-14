@@ -124,6 +124,11 @@ class MotiveBody : public Softbody {
   // update the position of scripted vertices, if any
   void update_scripted(real_t t);
 
+  // Explicitly update vel. and pos. by a uniform acceleration 
+  // v += a*dt
+  // p += v*dt
+  void advance_vel_pos(const Vec3r& a, real_t dt);
+
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   size_t num_fixed_vs() const { return num_fixed_; }
 

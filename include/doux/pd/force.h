@@ -5,39 +5,39 @@
 
 NAMESPACE_BEGIN(doux::pd)
 
-class GravityForce {
-
- public:
-  GravityForce() = default;
-  GravityForce(GravityForce&) = default;
-  GravityForce(GravityForce&&) = default;
-  GravityForce& operator = (GravityForce&) = default;
-  GravityForce& operator = (GravityForce&&) = default;
-
-  GravityForce(real_t g) noexcept : g_{g} {}
-  
-  // --------------------------------------------------
-  void step_vel_pos(MotiveBody& body, real_t dt) const;
-
- private:
-  real_t g_ {9.8};  // gravitational coefficient (m/s)
-};
-
 // This is a slight generalization of `GravityForce`
 class MassForce {
- public:
 
+ public:
+  MassForce() = default;
+  MassForce(const MassForce&) = default;
+  MassForce(MassForce&&) = default;
+  MassForce& operator = (const MassForce&) = default;
+  MassForce& operator = (MassForce&&) = default;
+
+  MassForce(real_t gx, real_t gy, real_t gz) noexcept :
+    g_{gx, gy, gz} {}
+
+  MassForce(const Vec3r& g) noexcept : g_(g) {}
+
+#if 0
   // explicit euler timestepping the velocity
   void step_vel(MotiveBody& body, real_t dt) const;
 
   // explicit euler timestepping softbody vertex positions
   void step_pos(MotiveBody& body, real_t dt) const;
+#endif
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE
+  auto const& coeff() const { return g_; }
 
   // This is a composite of `step_vel` and `step_pos`
-  void step_vel_pos(MotiveBody& body, real_t dt) const;
+  inline void step_vel_pos(MotiveBody& body, real_t dt) const {
+    body.advance_vel_pos(g_, dt);
+  }
 
  private:
-  Vec3r g_; // force coefficient
+  Vec3r g_{(real_t)0, (real_t)(-9.8), (real_t)0}; // force coefficient
 };
 
 NAMESPACE_END(doux::pd)

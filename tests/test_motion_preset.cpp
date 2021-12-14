@@ -156,3 +156,22 @@ TEST(TestPDMotionPreset, FixedSetup4) {
   EXPECT_APPROX_EQ(p0[1].y(), 8);
   EXPECT_APPROX_EQ(p0[1].z(), 9);
 }
+
+TEST(TestPDMotionPreset, FixedSetup5) {
+  using namespace doux;
+
+  linalg::matrix_r_t x(3, 3);
+  linalg::matrix_i_t e(1, 3);
+  x << 1, 2, 3, 4, 5, 6, 7, 8, 9;
+  e << 0, 1, 2;
+  shape::Mesh<2> msh(std::move(x), std::move(e));
+  pd::MotionPreset<2> preset(msh);
+  preset.script_vertex(1, [](const Point3r& a, real_t)->Point3r { return Point3r((real_t)0, (real_t)2, (real_t)1); } );
+  auto [sb, optmsh] = pd::build_softbody(preset);
+  sb.update_scripted(1.2);
+  
+  auto const& vp = sb.vtx_pos(0);
+  EXPECT_APPROX_EQ(vp.x(), 0);
+  EXPECT_APPROX_EQ(vp.y(), 2);
+  EXPECT_APPROX_EQ(vp.z(), 1);
+}
