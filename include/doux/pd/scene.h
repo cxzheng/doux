@@ -25,7 +25,7 @@ class Scene {
 
  private:
   /// a list of soft bodies to be simulated
-  std::vector<MotiveBody> sb_;
+  std::vector<PBDBody> sb_;
 
   /// a list of fixed objects (e.g., ground)
 

@@ -63,9 +63,8 @@ size_t XPBDSim<Scene_>::step() {
   // timestep by external forces
   if constexpr (!std::is_same_v<ExtForce_, std::monostate>) {
     for(auto& sb : scene_.deformables()) {
-      ext_f_.step_vel(sb, status_.dt);
+      ext_f_.apply(sb, status_.dt);
       // possibly damp the velocity
-      ext_f_.step_pos(sb, status_.dt);
     }
   }
 

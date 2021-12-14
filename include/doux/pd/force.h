@@ -31,9 +31,9 @@ class MassForce {
   [[nodiscard]] DOUX_ALWAYS_INLINE
   auto const& coeff() const { return g_; }
 
-  // This is a composite of `step_vel` and `step_pos`
-  inline void step_vel_pos(MotiveBody& body, real_t dt) const {
-    body.advance_vel_pos(g_, dt);
+  // apply the force to predict the vel and pos at the next timestep
+  inline void apply(PBDBody& body, real_t dt) const {
+    body.predict_vel_pos(g_, dt);
   }
 
  private:

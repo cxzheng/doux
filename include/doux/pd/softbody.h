@@ -122,12 +122,12 @@ class MotiveBody : public Softbody {
   // -------------------------------------------------
 
   // update the position of scripted vertices, if any
-  void update_scripted(real_t t);
-
-  // Explicitly update vel. and pos. by a uniform acceleration 
-  // v += a*dt
-  // p += v*dt
-  void advance_vel_pos(const Vec3r& a, real_t dt);
+  inline void update_scripted(real_t t) {
+    for(size_t i = num_fixed_;i < num_restricted_;++ i) {
+      auto const j = i - num_fixed_;
+      pos_[i] = script_[j](p0_[j], t);
+    }
+  }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   size_t num_fixed_vs() const { return num_fixed_; }
@@ -152,8 +152,21 @@ class MotiveBody : public Softbody {
 // in PBD framework.
 class PBDBody : public MotiveBody {
  public:
+  // Explicitly update vel. and pos. by a uniform acceleration 
+  // v += a*dt
+  // p += v*dt
+  void predict_vel_pos(const Vec3r& a, real_t dt);
+
+  // update the position of scripted vertices, if any
+  void update_scripted(real_t t) {
+    MotiveBody::update_scripted(t);
+    for(size_t i = num_fixed_;i < num_restricted_;++ i) {
+      pred_pos_[i] = pos_[i];
+    }
+  }
 
  private:
+  std::vector<Point3r>      pred_pos_; // predicted vertex positions
   // list of constraints for generating internal forces
 };
 
