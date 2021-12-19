@@ -176,6 +176,11 @@ struct SmallVecBase {
   Derived shuffle() const {
     return derived().template _shuffle<Indices...>();
   }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  Value_ dot(const Derived& rhs) const requires std::is_arithmetic_v<Value_> {
+    return derived()._dot(rhs);
+  }
 };
 
 // clang-format on

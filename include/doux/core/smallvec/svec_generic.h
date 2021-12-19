@@ -145,6 +145,12 @@ struct SmallVecImpl<Value_, Size_, Derived_> : SmallVecBase<Value_, Size_, Deriv
     return ret;
   }
 
+  DOUX_ALWAYS_INLINE Value_ _dot(const Derived& rhs) const {
+    Value_ ret = 0;
+    for (size_t i = 0;i < Size_;++ i) ret += data_[i]*rhs.data_[i];
+    return ret;
+  }
+
   DOUX_ALWAYS_INLINE Value_ _hsum() const {
     Value_ ret = 0;
     for (size_t i = 0;i < Size_;++ i) ret += data_[i];

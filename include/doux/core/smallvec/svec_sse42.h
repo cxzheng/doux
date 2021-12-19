@@ -24,6 +24,8 @@ template <>
 struct is_native<float, 3> : std::true_type {};
 }  // namespace internal
 
+// --------------------------------------------------------------------------------------
+
 template <typename Derived_>
 struct SmallVecImpl<double, 2, Derived_>
     : SmallVecBase<double, 2, Derived_> {
@@ -104,6 +106,11 @@ struct SmallVecImpl<double, 2, Derived_>
   DOUX_ALWAYS_INLINE void _set_zero() noexcept { m_ = _mm_setzero_pd(); }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE const Data& _data() const { return m_; }
+
+  // Dot product
+  DOUX_ALWAYS_INLINE value_t _dot(const Derived& rhs) const {
+    return _mm_cvtsd_f64(_mm_dp_pd(m_, rhs.m_, 0b00110001));
+  }
 
  private:
   union {
@@ -230,6 +237,15 @@ struct SmallVecImpl<float, Size_, Derived_>
   template <int I0, int I1, int I2>
   DOUX_ALWAYS_INLINE Derived _shuffle() const requires(Size_ == 3) {
     return Base::template shuffle<I0, I1, I2, 3>();
+  }
+
+  // Dot product
+  DOUX_ALWAYS_INLINE value_t _dot(const Derived& rhs) const {
+    if constexpr (Size_ == 4) {
+      return _mm_cvtss_f32(_mm_dp_ps(m_, rhs.m_, 0b11110001));
+    } else {
+      return _mm_cvtss_f32(_mm_dp_ps(m_, rhs.m_, 0b01110001));
+    }
   }
 
  private:

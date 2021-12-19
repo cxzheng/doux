@@ -86,6 +86,7 @@ static void BM_vector3d_cross(benchmark::State& state) {
 // Register the function as a benchmark
 BENCHMARK(BM_vector3d_cross);
 
+#if 0
 // cppcheck-suppress [constParameterCallback]
 static void BM_vector3d_cross_naive(benchmark::State& state) {
   doux::Vec3f p1(1.f, 2.f, 3.f);
@@ -97,5 +98,21 @@ static void BM_vector3d_cross_naive(benchmark::State& state) {
 }
 // Register the function as a benchmark
 BENCHMARK(BM_vector3d_cross_naive);
+#endif
 
+static DOUX_NEVER_INLINE auto vec4d_dot(const Vec4d& p1, const Vec4d& p2) {
+  asm("changxi_vec4_dot_:");
+  return p1.dot(p2);
+}
+
+// cppcheck-suppress [constParameterCallback]
+static void BM_vector4d_dot(benchmark::State& state) {
+  doux::Vec4d p1(1., 2., 3., 1.2);
+  doux::Vec4d p2(0.7, -2., 2.7, -0.8);
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(vec4d_dot(p1, p2));
+  }
+}
+// Register the function as a benchmark
+BENCHMARK(BM_vector4d_dot);
 BENCHMARK_MAIN();

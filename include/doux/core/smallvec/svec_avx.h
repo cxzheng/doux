@@ -176,6 +176,12 @@ struct SmallVecImpl<double, Size_, Derived_>
     return Base::template shuffle<I0, I1, I2, 3>();
   }
 
+  // Dot product
+  DOUX_ALWAYS_INLINE value_t _dot(const Derived& rhs) const {
+    // TODO: Is there better impl?
+    return (Base::derived() * rhs)._hsum();
+  }
+
   union {
     double data_[4];
     __m256d m_;
@@ -309,6 +315,15 @@ struct SmallVecImpl<float, 8, Derived_> : SmallVecBase<float, 8, Derived_> {
   }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE const Data& _data() const { return m_; }
+
+  // Dot product
+  DOUX_ALWAYS_INLINE value_t _dot(const Derived& rhs) const {
+    __m256 dp = _mm256_dp_ps(m_, rhs.m_, 0b11110001);
+    __m128 m0 = _mm256_castps256_ps128(dp);
+    __m128 m1 = _mm256_extractf128_ps(dp, 1);
+    __m128 m = _mm_add_ss(m0, m1);
+    return _mm_cvtss_f32(m); 
+  }
 
   union {
     float data_[8];
