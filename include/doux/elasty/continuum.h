@@ -16,7 +16,7 @@ NAMESPACE_BEGIN(doux::elasty)
 // return \lambda, \mu
 // \lambda: first Lame coefficient 
 // \mu: second Lame coefficient 
-std::pair<real_t, real_t> lame_coeff(real_t youngs_modulus, real_t poisson_ratio) {  // tested
+inline std::pair<real_t, real_t> lame_coeff(real_t youngs_modulus, real_t poisson_ratio) {  // tested
   assert(poisson_ratio >= 0 && poisson_ratio <= 0.5 && youngs_modulus > 0);
 
   auto sv = (real_t)1 / ((real_t)1 + poisson_ratio);

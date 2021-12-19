@@ -10,6 +10,7 @@ using complex_t = std::complex<real_t>;
 
 // matrix of real values
 using matrix_r_t = Eigen::Matrix<real_t, Eigen::Dynamic, Eigen::Dynamic>;
+using matrix2_r_t = Eigen::Matrix<real_t, 2, 2>;
 using vector_r_t = Eigen::Matrix<real_t, Eigen::Dynamic, 1>;
 
 using matrix_ui_t = Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic>;

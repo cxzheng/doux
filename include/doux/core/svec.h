@@ -33,4 +33,16 @@ template <size_t D_> using VecUL = doux::SVector<size_t, D_>;
 using Vec2UL = VecUL<2>;
 using Vec3UL = VecUL<3>; 
 
+// ------------------------------------------------------------------
+// methods specific to certain dimension of vectors: 
+
+template <typename Value_> 
+DOUX_ALWAYS_INLINE 
+auto cross(const SVector<Value_, 3>& v1, const SVector<Value_, 3>& v2) {
+  return SVector<Value_, 3>(
+          v1.y() * v2.z() - v2.y() * v1.z(),
+          v1.z() * v2.x() - v2.z() * v1.x(),
+          v1.x() * v2.y() - v2.x() * v1.y());
+}
+
 NAMESPACE_END(doux)

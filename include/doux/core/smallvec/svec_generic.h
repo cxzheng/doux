@@ -222,6 +222,16 @@ struct SmallVecImpl<Value_, Size_, Derived_> : SmallVecBase<Value_, Size_, Deriv
   [[nodiscard]] DOUX_ALWAYS_INLINE DOUX_ATTR(returns_nonnull)
   const Value_* data_ptr() const noexcept { return data_.data(); }
 
+  /// Shuffle operation fallback implementation
+  template <size_t... Indices> inline Derived _shuffle() const {
+    static_assert(sizeof...(Indices) == Size_, "shuffle(): Invalid size!");
+    Derived out;
+    size_t idx = 0;
+    bool result[] = { (out._c(idx++) = data_[Indices % Size_], false)... };
+    (void) idx; (void) result;
+    return out;
+  }
+
  private:
   std::array<Value_, Size_> data_;
 };
@@ -311,6 +321,7 @@ struct SVector : SmallVecImpl<Value_, Size_, SVector<Value_, Size_>> {
       requires doux::IsValidVecInitList<Size_, std::decay<Ts>...>
       : Base{std::forward<Ts>(ts)...} {}
 };
+
 // clang-format on
 
 NAMESPACE_END(doux::svec)

@@ -51,8 +51,7 @@ struct SmallVecImpl<double, Size_, Derived_>
       requires(Size_ == 3)
       : m_{_mm256_setr_pd(d0, d1, d2, 0.)} {}
 
-  void set(double d0, double d1, double d2, double d3) 
-      requires(Size_ == 4) {
+  void set(double d0, double d1, double d2, double d3) requires(Size_ == 4) {
       m_ = _mm256_setr_pd(d0, d1, d2, d3); 
   }
   void set(double d0, double d1, double d2) requires(Size_ == 3) {

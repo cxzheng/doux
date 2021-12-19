@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <random>
-
+#include "common.h"
 #include "doux/core/svec.h"
 
 class SVecTests : public ::testing::Test {
@@ -125,6 +125,7 @@ TEST_F(SVecTests, Ceil) {
     }
   }
 }
+
 TEST_F(SVecTests, HSum) {
   {
     auto r = v2_.hsum();
@@ -196,7 +197,7 @@ TEST_F(SVecTests, Rcp) {
     auto r = v8_.rcp();
     EXPECT_NEAR(1./v8_.val<0>(), r.val<0>(), std::abs(r.val<0>())*1E-6);
     EXPECT_NEAR(1./v8_.val<1>(), r.val<1>(), std::abs(r.val<1>())*1E-6);
-    EXPECT_NEAR(1./v8_.val<7>(), r.val<7>(), std::abs(r.val<2>())*1E-6);
+    EXPECT_NEAR(1./v8_.val<7>(), r.val<7>(), std::abs(r.val<2>())*1E-5);
   }
 }
 
@@ -478,5 +479,46 @@ TEST(SVecTest, Vec8f) {
   {
     auto ret = p1.hprod();
     EXPECT_FLOAT_EQ(std::pow(1.5f, 8.f), ret);
+  }
+}
+
+TEST(SVecTest, Shuffle) {
+  {
+    doux::SVector<int, 5> a(1, 2, 3, 4, 5);
+    auto r = a.shuffle<1, 0, 2, 4, 3>();
+    EXPECT_EQ(2, r[0]);
+    EXPECT_EQ(1, r[1]);
+    EXPECT_EQ(3, r[2]);
+    EXPECT_EQ(5, r[3]);
+    EXPECT_EQ(4, r[4]);
+  }
+  {
+    doux::SVector<float, 4> a(1.f, 2.f, 3.f, 4.f);
+    auto r = a.shuffle<1, 0, 3, 2>();
+    EXPECT_FLOAT_EQ(2, r[0]);
+    EXPECT_FLOAT_EQ(1, r[1]);
+    EXPECT_FLOAT_EQ(4, r[2]);
+    EXPECT_FLOAT_EQ(3, r[3]);
+  }
+  {
+    doux::SVector<float, 3> a(1.f, 2.f, 3.f);
+    auto r = a.shuffle<0, 1, 2>();
+    EXPECT_FLOAT_EQ(1, r[0]);
+    EXPECT_FLOAT_EQ(2, r[1]);
+    EXPECT_FLOAT_EQ(3, r[2]);
+    auto t = a.shuffle<0, 2, 1>();
+    EXPECT_FLOAT_EQ(1, t[0]);
+    EXPECT_FLOAT_EQ(3, t[1]);
+    EXPECT_FLOAT_EQ(2, t[2]);
+  }
+}
+
+TEST(SVecTest, CrossProd) {
+  {
+    doux::SVector<real_t, 3> v1{(real_t)1, (real_t)0., (real_t)0.}, v2{(real_t)0., (real_t)1., (real_t)0.};
+    auto v = doux::cross(v1, v2);
+    ASSERT_APPROX_EQ(0, v.x());
+    ASSERT_APPROX_EQ(0, v.y());
+    ASSERT_APPROX_EQ(1, v.z());
   }
 }

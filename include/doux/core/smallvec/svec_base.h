@@ -171,6 +171,11 @@ struct SmallVecBase {
     ret._set_zero();
     return ret;
   }
+
+  template <size_t... Indices> DOUX_ALWAYS_INLINE 
+  Derived shuffle() const {
+    return derived().template _shuffle<Indices...>();
+  }
 };
 
 // clang-format on

@@ -1,5 +1,6 @@
 #include "doux/pd/softbody.h"
 #include "doux/pd/constraint.h"
+#include "doux/elasty/continuum.h"
 
 NAMESPACE_BEGIN(doux::pd)
 
@@ -67,4 +68,25 @@ void UnitaryDistCFunc::grad(std::span<real_t> grad_ret) {
 }
 
 // -------------------------------------------------------------------------------
+
+StVKTriCFunc::StVKTriCFunc(Softbody* sb, uint32_t v0, uint32_t v1, uint32_t v2, 
+                           real_t youngs_modulus, real_t poisson_ratio) : 
+                           CFunc(sb), v_{v0, v1, v2} {
+  assert(sb);
+  // lame_coeff_ 
+  auto const [a, b] = elasty::lame_coeff(youngs_modulus, poisson_ratio);
+  lame_coeff_[0] = a;
+  lame_coeff_[1] = b;
+
+  auto const& X0 = sb->vtx_pos(v0);
+  auto const& X1 = sb->vtx_pos(v1);
+  auto const& X2 = sb->vtx_pos(v2);
+}
+
+[[nodiscard]] real_t StVKTriCFunc::c() const {
+}
+
+void StVKTriCFunc::grad(std::span<real_t> grad_ret) {
+}
+
 NAMESPACE_END(doux::pd)

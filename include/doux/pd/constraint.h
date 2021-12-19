@@ -7,6 +7,7 @@
 #include "doux/doux.h"
 #include "doux/core/point.h"
 #include "doux/core/variants.h"
+#include "doux/linalg/num_types.h"
 #include <random>
 #include <span>
 
@@ -108,6 +109,7 @@ class UnitaryDistCFunc : public CFunc {
 class StVKTriCFunc : public CFunc {
  public:
   StVKTriCFunc() = delete;
+
   StVKTriCFunc(Softbody* sb, uint32_t v0, uint32_t v1, uint32_t v2, real_t youngs_modulus, real_t possion_ratio); 
 
   [[nodiscard]] real_t c() const override;
@@ -115,7 +117,10 @@ class StVKTriCFunc : public CFunc {
   void grad(std::span<real_t> grad_ret) override;
 
  private:
-  uint32_t v_[3];  // triangle vertex IDs
+  uint32_t  v_[3];          // triangle vertex IDs
+  real_t    lame_coeff_[2]; // lame coefficients
+  real_t    area_;          // triangle area
+  linalg::matrix2_r_t D_inv_;
 };
 
 /*
