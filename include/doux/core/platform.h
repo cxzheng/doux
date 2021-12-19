@@ -39,6 +39,10 @@ typedef double double4_t __attribute__ ((vector_size (4 * sizeof(double))));  //
 #endif
 #endif
 
+#if defined(__AVX2__)
+#   define DOUX_X86_AVX2 1
+#endif
+
 #if defined(__SSE4_2__)
 #   define DOUX_X86_SSE42 1
 #endif

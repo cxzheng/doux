@@ -501,6 +501,14 @@ TEST(SVecTest, Shuffle) {
     EXPECT_FLOAT_EQ(3, r[3]);
   }
   {
+    doux::SVector<double, 4> a(1., 2., 3., 4.);
+    auto r = a.shuffle<1, 0, 3, 2>();
+    EXPECT_DOUBLE_EQ(2, r[0]);
+    EXPECT_DOUBLE_EQ(1, r[1]);
+    EXPECT_DOUBLE_EQ(4, r[2]);
+    EXPECT_DOUBLE_EQ(3, r[3]);
+  }
+  {
     doux::SVector<float, 3> a(1.f, 2.f, 3.f);
     auto r = a.shuffle<0, 1, 2>();
     EXPECT_FLOAT_EQ(1, r[0]);
@@ -511,6 +519,17 @@ TEST(SVecTest, Shuffle) {
     EXPECT_FLOAT_EQ(3, t[1]);
     EXPECT_FLOAT_EQ(2, t[2]);
   }
+  {
+    doux::SVector<double, 3> a(1., 2., 3.);
+    auto r = a.shuffle<0, 1, 2>();
+    EXPECT_DOUBLE_EQ(1, r[0]);
+    EXPECT_DOUBLE_EQ(2, r[1]);
+    EXPECT_DOUBLE_EQ(3, r[2]);
+    auto t = a.shuffle<0, 2, 1>();
+    EXPECT_DOUBLE_EQ(1, t[0]);
+    EXPECT_DOUBLE_EQ(3, t[1]);
+    EXPECT_DOUBLE_EQ(2, t[2]);
+  }
 }
 
 TEST(SVecTest, CrossProd) {
@@ -520,5 +539,13 @@ TEST(SVecTest, CrossProd) {
     ASSERT_APPROX_EQ(0, v.x());
     ASSERT_APPROX_EQ(0, v.y());
     ASSERT_APPROX_EQ(1, v.z());
+  }
+  {
+    doux::SVector<real_t, 3> v1{(real_t)1, (real_t)2., (real_t)-1.}, v2{(real_t)-2., (real_t)9., (real_t)3.};
+    auto v = doux::cross(v1, v2);
+    auto r = doux::cross_naive(v1, v2);
+    ASSERT_APPROX_EQ(r.x(), v.x());
+    ASSERT_APPROX_EQ(r.y(), v.y());
+    ASSERT_APPROX_EQ(r.z(), v.z());
   }
 }

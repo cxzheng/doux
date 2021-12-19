@@ -162,6 +162,20 @@ struct SmallVecImpl<double, Size_, Derived_>
 
   [[nodiscard]] DOUX_ALWAYS_INLINE const Data& _data() const { return m_; }
 
+  template <int I0, int I1, int I2, int I3>
+  DOUX_ALWAYS_INLINE Derived _shuffle() const {
+#if DOUX_X86_AVX2
+    return Derived{_mm256_permute4x64_pd(m_, _MM_SHUFFLE(I3, I2, I1, I0))};
+#else
+    UNIMPLEMENTED
+#endif
+  }
+
+  template <int I0, int I1, int I2>
+  DOUX_ALWAYS_INLINE Derived _shuffle() const requires(Size_ == 3) {
+    return Base::template shuffle<I0, I1, I2, 3>();
+  }
+
   union {
     double data_[4];
     __m256d m_;

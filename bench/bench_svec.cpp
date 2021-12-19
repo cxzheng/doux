@@ -71,4 +71,31 @@ static void BM_vector3d_normalize(benchmark::State& state) {
 }
 // Register the function as a benchmark
 BENCHMARK(BM_vector3d_normalize);
+
+// ------------------------------------------------------------------------
+
+// cppcheck-suppress [constParameterCallback]
+static void BM_vector3d_cross(benchmark::State& state) {
+  doux::Vec3d p1(1., 2., 3.);
+  doux::Vec3d p2(2., -3., 4.);
+  for (auto _ : state) {
+    auto r = doux::cross(p1, p2);
+    benchmark::DoNotOptimize(r);
+  }
+}
+// Register the function as a benchmark
+BENCHMARK(BM_vector3d_cross);
+
+// cppcheck-suppress [constParameterCallback]
+static void BM_vector3d_cross_naive(benchmark::State& state) {
+  doux::Vec3d p1(1., 2., 3.);
+  doux::Vec3d p2(2., -3., 4.);
+  for (auto _ : state) {
+    auto r = doux::cross_naive(p1, p2);
+    benchmark::DoNotOptimize(r);
+  }
+}
+// Register the function as a benchmark
+BENCHMARK(BM_vector3d_cross_naive);
+
 BENCHMARK_MAIN();

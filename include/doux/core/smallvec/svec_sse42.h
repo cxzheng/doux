@@ -220,16 +220,16 @@ struct SmallVecImpl<float, Size_, Derived_>
 
   template <int I0, int I1, int I2, int I3>
   DOUX_ALWAYS_INLINE Derived _shuffle() const {
-  #if DOUX_X86_AVX
+#if DOUX_X86_AVX
     return Derived{_mm_permute_ps(m_, _MM_SHUFFLE(I3, I2, I1, I0))};
-  #else
+#else
     return Derived{_mm_shuffle_ps(m_, m_, _MM_SHUFFLE(I3, I2, I1, I0))};
-  #endif
+#endif
   }
 
   template <int I0, int I1, int I2>
   DOUX_ALWAYS_INLINE Derived _shuffle() const requires(Size_ == 3) {
-   return Base::template shuffle<I0, I1, I2, 3>();
+    return Base::template shuffle<I0, I1, I2, 3>();
   }
 
  private:
