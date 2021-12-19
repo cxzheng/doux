@@ -113,6 +113,16 @@ static void BM_cons_virtual(benchmark::State& state) {
 // Register the function as a benchmark
 BENCHMARK(BM_cons_virtual);
 
+#if 0
+// Tested on both Clang 13.0 and GCC 10.3.0
+// It seems using variant is even slower than virtual function
+// 
+// e.g., on my Macbook:
+// ----------------------------------------------------------
+// Benchmark                Time             CPU   Iterations
+// ----------------------------------------------------------
+// BM_cons_virtual       73.2 ns         73.1 ns      8452269
+// BM_cons_variant       91.0 ns         91.0 ns      7370593
 static void BM_cons_variant(benchmark::State& state) {
   using namespace doux;
 
@@ -144,5 +154,6 @@ static void BM_cons_variant(benchmark::State& state) {
 
 // Register the function as a benchmark
 BENCHMARK(BM_cons_variant);
+#endif
 
 BENCHMARK_MAIN();

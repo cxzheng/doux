@@ -23,7 +23,11 @@ class CFunc {
   CFunc& operator = (const CFunc&) = default;
   CFunc& operator = (CFunc&&) = default;
 
-  CFunc(Softbody* sb) noexcept : body_{sb} {}
+  DOUX_ATTR(nonnull) CFunc(Softbody* sb) noexcept : body_{sb} {}
+  virtual ~CFunc() {}
+
+  [[nodiscard]] virtual real_t c() const = 0;
+  virtual void grad(std::span<real_t> grad_ret) = 0;
 
  protected:
   Softbody* body_;
@@ -42,6 +46,7 @@ class DistCFunc : public CFunc {
   DistCFunc(Softbody* sb, uint32_t v1, uint32_t v2, real_t d0) :
       CFunc(sb), v_{v1, v2}, d0_(d0) {
 #ifndef NDEBUG
+    assert(sb);
     if ( d0 < 0 ) {
       throw std::invalid_argument(fmt::format("Provided d0 value must be positive: {}", d0));
     }
@@ -49,10 +54,10 @@ class DistCFunc : public CFunc {
   }
 
   // constrait value
-  [[nodiscard]] real_t c() const;
+  [[nodiscard]] real_t c() const override;
 
   // gradient of constraint
-  void grad(std::span<real_t> grad_ret);
+  void grad(std::span<real_t> grad_ret) override;
 
  private:
   uint32_t  v_[2];  // vertex IDs
@@ -76,15 +81,16 @@ class UnitaryDistCFunc : public CFunc {
   UnitaryDistCFunc(Softbody* sb, uint32_t v, const Point3r& p0, real_t d0) :
       CFunc(sb), v_{v}, p0_{p0}, d0_{d0} {
 #ifndef NDEBUG
+    assert(sb);
     if ( d0 < 0 ) {
       throw std::invalid_argument(fmt::format("Provided d0 value must be positive: {}", d0));
     }
 #endif
   }
 
-  [[nodiscard]] real_t c() const;
+  [[nodiscard]] real_t c() const override;
 
-  void grad(std::span<real_t> grad_ret);
+  void grad(std::span<real_t> grad_ret) override;
 
  private:
   uint32_t        v_;
@@ -94,6 +100,22 @@ class UnitaryDistCFunc : public CFunc {
   // NOTE: use a simple random generator to handle the degenerated case
   // where the vertex and p0_ are colocated. 
   std::minstd_rand rg_{123456789};
+};
+
+/*
+ * Constraints based on StVK continuum model on a triangle
+ */
+class StVKTriCFunc : public CFunc {
+ public:
+  StVKTriCFunc() = delete;
+  StVKTriCFunc(Softbody* sb, uint32_t v0, uint32_t v1, uint32_t v2, real_t youngs_modulus, real_t possion_ratio); 
+
+  [[nodiscard]] real_t c() const override;
+
+  void grad(std::span<real_t> grad_ret) override;
+
+ private:
+  uint32_t v_[3];  // triangle vertex IDs
 };
 
 /*
@@ -108,9 +130,9 @@ class SurfBendingCFunc : public CFunc {
   SurfBendingCFunc& operator = (const SurfBendingCFunc&) = delete;
   SurfBendingCFunc& operator = (SurfBendingCFunc&&) = delete;
 
-  [[nodiscard]] real_t c() const;
+  [[nodiscard]] real_t c() const override;
 
-  void grad(std::span<real_t> grad_ret);
+  void grad(std::span<real_t> grad_ret) override;
 
  private:
  /* Indices of v_ arrays are:
@@ -126,6 +148,7 @@ class SurfBendingCFunc : public CFunc {
   uint32_t        v_[4];
 };
 
+#if 0
 using cfunc_var_t = std::variant<DistCFunc, UnitaryDistCFunc>;
 
 inline real_t cfunc_val(cfunc_var_t& func) {
@@ -139,29 +162,6 @@ inline void cfunc_grad(cfunc_var_t& func, std::span<real_t> g) {
     [&](auto& f) { f.grad(g); }, 
     func);
 }
+#endif
 
 NAMESPACE_END(doux::pd)
-
-/*
-// Constraint with a fix number of vertices involved. This is the contraint
-// typically used for generating internl forces
-//
-template<size_t N_, class CFunc_>
-requires(N_ > 0)
-class FixedConstraint {
- public:
-  static constexpr size_t VtxNum = N_;
-
-  // project the vertices
-  void project();
-};
-
-// Constraint that involves a dynamic set of vertices. The vertices are determined
-// at runtime. E.g., the constraints introduced by collisions
-class DynConstraint {
- public:
-
-  // project the vertices
-  void project();
-};
-*/
