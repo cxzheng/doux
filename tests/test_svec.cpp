@@ -504,6 +504,11 @@ TEST(SVecTest, Dot) {
     EXPECT_FLOAT_EQ(1.4*1.4*8, r);
   }
   {
+    doux::SVector<double, 4> a(1.2, 1.3, 1.0, 0.9);
+    doux::SVector<double, 4> b(2.2, 0.3, 1.9, 2.9);
+    EXPECT_DOUBLE_EQ(1.2*2.2 + 1.3*0.3 + 1.0*1.9 + 0.9*2.9, doux::dot(a, b));
+  }
+  {
     doux::SVector<float, 8> v(1.4), v2(2.1);
     auto r = v.dot(v2);
     EXPECT_FLOAT_EQ(1.4*2.1*8, r);
@@ -521,6 +526,7 @@ TEST(SVecTest, Dot) {
     EXPECT_DOUBLE_EQ(1.4*2.2*2, r);
     auto r2 = v2.dot(v);
     EXPECT_DOUBLE_EQ(r2, r);
+    EXPECT_DOUBLE_EQ(r2, doux::dot(v, v2));
   }
 }
 
