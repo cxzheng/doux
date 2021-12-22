@@ -1,4 +1,4 @@
-#include "Eigen/Core"
+#include <Eigen/LU>
 #include "doux/core/math_func.h"
 #include "doux/pd/softbody.h"
 #include "doux/pd/constraint.h"

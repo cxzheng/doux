@@ -1,4 +1,3 @@
-#include "doux/core/point.h"
 #include "doux/core/svec.h"
 #include "benchmark/benchmark.h"
 
@@ -22,14 +21,14 @@ BENCHMARK(BM_vector3d_oper);
 
 // ------------------------------------------------------------------------
 
-static DOUX_NEVER_INLINE auto point_oper(const Point3d& p1, const Vec3d& v2,
+static DOUX_NEVER_INLINE auto point_oper(const Vec3d& p1, const Vec3d& v2,
                                         const Vec3d& v3) {
   asm("changxi_label_2:");
   return (p1 + v2) - v3;
 }
 // cppcheck-suppress [constParameterCallback]
 static void BM_point3d_oper(benchmark::State& state) {
-  Point3d p1(1., 2., 3.);
+  Vec3d p1(1., 2., 3.);
   Vec3d v2(3., 2., 4.), v3(1.2, 3.2, -1100.9);
   for (auto _ : state) {
     benchmark::DoNotOptimize(point_oper(p1, v2, v3));

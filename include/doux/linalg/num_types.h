@@ -1,7 +1,7 @@
 #pragma once
 
 #include <complex>
-#include "Eigen/Core"
+#include <Eigen/Core>
 #include "doux/doux.h"
 
 NAMESPACE_BEGIN(doux::linalg)

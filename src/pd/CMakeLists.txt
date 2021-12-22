@@ -13,6 +13,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} 
   PUBLIC 
     doux::core    doux::linalg
+    Eigen3::Eigen
 )
 
 target_compile_features(${PROJECT_NAME}

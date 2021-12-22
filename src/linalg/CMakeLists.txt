@@ -1,8 +1,5 @@
 project(linalg)
 
-hunter_add_package(Eigen)
-find_package(Eigen3 CONFIG REQUIRED)
-
 add_library(${PROJECT_NAME} INTERFACE)
 add_library(doux::linalg ALIAS ${PROJECT_NAME})
 
