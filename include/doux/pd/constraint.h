@@ -116,11 +116,13 @@ class StVKTriCFunc : public CFunc {
 
   void grad(std::span<real_t> grad_ret) override;
 
+  [[nodiscard]] DOUX_ALWAYS_INLINE real_t tri_area() const { return area_; }
+
  private:
   uint32_t  v_[3];          // triangle vertex IDs
   real_t    lame_coeff_[2]; // lame coefficients
   real_t    area_;          // triangle area
-  linalg::matrix2_r_t D_inv_;
+  linalg::mat2_r_t D_inv_;
 };
 
 /*

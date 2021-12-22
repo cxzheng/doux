@@ -1,3 +1,5 @@
+#include "Eigen/Core"
+#include "doux/core/math_func.h"
 #include "doux/pd/softbody.h"
 #include "doux/pd/constraint.h"
 #include "doux/elasty/continuum.h"
@@ -78,9 +80,30 @@ StVKTriCFunc::StVKTriCFunc(Softbody* sb, uint32_t v0, uint32_t v1, uint32_t v2,
   lame_coeff_[0] = a;
   lame_coeff_[1] = b;
 
-  auto const& X0 = sb->vtx_pos(v0);
+  auto const& X0 = sb->vtx_pos(v0); // point3r
   auto const& X1 = sb->vtx_pos(v1);
   auto const& X2 = sb->vtx_pos(v2);
+
+  auto const X10 = X1 - X0;
+  auto const X20 = X2 - X0;
+
+  auto const cxs = cross(X10, X20);
+  area_ = cxs.norm();
+  assert(area_ > eps<real_t>::v);
+  auto const ax1 = cxs / area_; // normalize X10
+  area_ *= 0.5;                 // triangle area
+  auto const ax2 = cross(cxs, ax1).normalize();
+  
+  const linalg::vec2_r_t proj_x_0(ax1.dot(X0), ax2.dot(X0));
+  const linalg::vec2_r_t proj_x_1(ax1.dot(X1), ax2.dot(X1));
+  const linalg::vec2_r_t proj_x_2(ax1.dot(X2), ax2.dot(X2));
+
+  linalg::mat2_r_t D;
+  D.col(0) = proj_x_1 - proj_x_0; // x10
+  D.col(1) = proj_x_2 - proj_x_0; // x10
+
+  assert(D.determinant() > eps<real_t>::v);
+  D_inv_ = D.inverse();
 }
 
 [[nodiscard]] real_t StVKTriCFunc::c() const {

@@ -39,7 +39,7 @@ using Vec3UL = VecUL<3>;
 // methods specific to certain dimension of vectors: 
 
 template <typename T_, size_t D_> 
-DOUX_ALWAYS_INLINE 
+[[nodiscard]] DOUX_ALWAYS_INLINE 
 auto dot(const SVector<T_, D_>& v1, const SVector<T_, D_>& v2) {
   return v1.dot(v2);
 }
@@ -48,7 +48,7 @@ auto dot(const SVector<T_, D_>& v1, const SVector<T_, D_>& v2) {
 
 // According to my profiling, this naive impl is on par with the impl. below.
 template <typename Value_> 
-DOUX_ALWAYS_INLINE 
+[[nodiscard]] DOUX_ALWAYS_INLINE 
 auto cross(const SVector<Value_, 3>& v1, const SVector<Value_, 3>& v2) {
   return SVector<Value_, 3>(
           v1.y() * v2.z() - v2.y() * v1.z(),
