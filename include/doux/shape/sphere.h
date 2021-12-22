@@ -1,6 +1,6 @@
 #pragma once
 
-#include "doux/core/point.h"
+#include "doux/core/svec.h"
 #include "cuboid.h"
 
 NAMESPACE_BEGIN(doux::shape)
@@ -18,7 +18,7 @@ class Sphere {
   Sphere& operator=(const Sphere&) = default;
   Sphere& operator=(Sphere&&) noexcept = default;
 
-  Sphere(const Point<T_, D_>& c, T_ r) : ctr_{c}, rad_{r}, r2_{r * r} {
+  Sphere(const SVector<T_, D_>& c, T_ r) : ctr_{c}, rad_{r}, r2_{r * r} {
 #ifndef NDEBUG
     if (r <= 0.) {
       throw std::invalid_argument(
@@ -43,14 +43,14 @@ class Sphere {
   }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
-  bool contain(const Point<T_, D_>& pt) const noexcept {
+  bool contain(const SVector<T_, D_>& pt) const noexcept {
       //requires requires(T_ a) { { a*a } ->std::same_as<T_>; } {
     return (pt - ctr_).sqr().hsum() < r2_;
   }
 
  private:
   /// Minimum point of the cuboid
-  Point<T_, D_> ctr_;
+  SVector<T_, D_> ctr_;
   /// Radius
   T_ rad_;
   /// Radius square

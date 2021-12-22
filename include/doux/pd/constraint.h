@@ -5,7 +5,7 @@
  */
 
 #include "doux/doux.h"
-#include "doux/core/point.h"
+#include "doux/core/svec.h"
 #include "doux/core/variants.h"
 #include "doux/linalg/num_types.h"
 #include <random>
@@ -79,7 +79,7 @@ class UnitaryDistCFunc : public CFunc {
   UnitaryDistCFunc& operator = (const UnitaryDistCFunc&) = default;
   UnitaryDistCFunc& operator = (UnitaryDistCFunc&&) = default;
 
-  UnitaryDistCFunc(Softbody* sb, uint32_t v, const Point3r& p0, real_t d0) :
+  UnitaryDistCFunc(Softbody* sb, uint32_t v, const Vec3r& p0, real_t d0) :
       CFunc(sb), v_{v}, p0_{p0}, d0_{d0} {
 #ifndef NDEBUG
     assert(sb);
@@ -94,9 +94,9 @@ class UnitaryDistCFunc : public CFunc {
   void grad(std::span<real_t> grad_ret) override;
 
  private:
-  uint32_t        v_;
-  Point3r         p0_;
-  real_t          d0_;
+  uint32_t      v_;
+  Vec3r         p0_;
+  real_t        d0_;
 
   // NOTE: use a simple random generator to handle the degenerated case
   // where the vertex and p0_ are colocated. 

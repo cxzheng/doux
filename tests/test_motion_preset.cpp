@@ -73,7 +73,7 @@ TEST(TestPDMotionPreset, FixedSetup2) {
   shape::Mesh<2> msh(std::move(x), std::move(e));
   pd::MotionPreset<2> preset(msh);
   preset.fix_vertex(1);
-  preset.script_vertex(2, [](const Point3r& a, real_t)->Point3r { return a; } );
+  preset.script_vertex(2, [](const Vec3r& a, real_t)->Vec3r { return a; } );
   auto vid = preset.reorder_vertices().value();
   EXPECT_EQ(vid[0], 1);
   EXPECT_EQ(vid[1], 2);
@@ -107,7 +107,7 @@ TEST(TestPDMotionPreset, FixedSetup3) {
   shape::Mesh<2> msh(std::move(x), std::move(e));
   pd::MotionPreset<2> preset(msh);
   preset.fix_vertex(1);
-  preset.script_vertex(2, [](const Point3r& a, real_t)->Point3r { return a; } );
+  preset.script_vertex(2, [](const Vec3r& a, real_t)->Vec3r { return a; } );
   auto [sb, optmsh] = pd::build_softbody(preset);
 
   ASSERT_TRUE(optmsh);
@@ -142,8 +142,8 @@ TEST(TestPDMotionPreset, FixedSetup4) {
   e << 0, 1, 2;
   shape::Mesh<2> msh(std::move(x), std::move(e));
   pd::MotionPreset<2> preset(msh);
-  preset.script_vertex(2, [](const Point3r& a, real_t)->Point3r { return a; } );
-  preset.script_vertex(1, [](const Point3r& a, real_t)->Point3r { return Point3r((real_t)0, (real_t)2, (real_t)1); } );
+  preset.script_vertex(2, [](const Vec3r& a, real_t)->Vec3r { return a; } );
+  preset.script_vertex(1, [](const Vec3r& a, real_t)->Vec3r { return Vec3r((real_t)0, (real_t)2, (real_t)1); } );
   auto [sb, optmsh] = pd::build_softbody(preset);
   auto const& p0 = sb.init_scripted_pos();
 
@@ -166,7 +166,7 @@ TEST(TestPDMotionPreset, FixedSetup5) {
   e << 0, 1, 2;
   shape::Mesh<2> msh(std::move(x), std::move(e));
   pd::MotionPreset<2> preset(msh);
-  preset.script_vertex(1, [](const Point3r& a, real_t)->Point3r { return Point3r((real_t)0, (real_t)2, (real_t)1); } );
+  preset.script_vertex(1, [](const Vec3r& a, real_t)->Vec3r { return Vec3r((real_t)0, (real_t)2, (real_t)1); } );
   auto [sb, optmsh] = pd::build_softbody(preset);
   sb.update_scripted(1.2);
   

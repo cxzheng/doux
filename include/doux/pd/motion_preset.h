@@ -20,7 +20,7 @@ template <size_t D_>
 requires(D_ > 1 && D_ < 4)
 class MotionPreset {
  public:
-  using MotionFunc = std::function<Point3r(const Point3r&, real_t)>;
+  using MotionFunc = std::function<Vec3r(const Vec3r&, real_t)>;
 
   MotionPreset() = delete;
   MotionPreset(MotionPreset&) = delete;
@@ -178,7 +178,7 @@ build_softbody(const MotionPreset<D_>& preset) {
   auto const& vs = ordered_msh.vertices();
 
   // populate p0: initial positions of scripted vertices
-  std::vector<Point3r> p0; 
+  std::vector<Vec3r> p0; 
   p0.reserve(preset.num_scripted_vs());
   const size_t nfixed = preset.num_fixed_vs();
   const size_t ni = nfixed + preset.num_scripted_vs();

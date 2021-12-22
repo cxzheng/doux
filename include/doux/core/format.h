@@ -2,7 +2,6 @@
 
 #include <fmt/format.h>
 
-#include "point.h"
 #include "svec.h"
 
 #define FMT_FORMATTER(type)                                  \
@@ -25,6 +24,6 @@
   };
 
 FMT_FORMATTER(doux::SVector)
-FMT_FORMATTER(doux::Point)
+//FMT_FORMATTER(doux::Point)
 
 #undef FMT_FORMATTER

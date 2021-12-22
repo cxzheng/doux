@@ -1,7 +1,7 @@
 #pragma once
 
 #include "doux/core/platform.h"
-#include "doux/core/point.h"
+#include "doux/core/svec.h"
 #include "doux/linalg/num_types.h"
 
 NAMESPACE_BEGIN(doux::shape)
@@ -49,7 +49,7 @@ class Mesh {
   [[nodiscard]] DOUX_ALWAYS_INLINE
   size_t num_vertices() const { return x_.rows(); }
 
-  [[nodiscard]] std::vector<Point3r> vtx_pos() const;
+  [[nodiscard]] std::vector<Vec3r> vtx_pos() const;
 
  private:
   // vertex positions
@@ -62,8 +62,8 @@ class Mesh {
 
 template<size_t D_>
 requires(D_ > 0 && D_ < 4)
-[[nodiscard]] std::vector<Point3r> Mesh<D_>::vtx_pos() const {
-  std::vector<Point3r> ret(x_.rows());
+[[nodiscard]] std::vector<Vec3r> Mesh<D_>::vtx_pos() const {
+  std::vector<Vec3r> ret(x_.rows());
   for(size_t i = 0;i < ret.size();++ i) {
     ret[i].set(x_(i, 0), x_(i, 1), x_(i, 2));
   }

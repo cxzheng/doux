@@ -7,7 +7,7 @@
 TEST(TestPDConstraint, DistCons) {
   using namespace doux;
 
-  std::vector<Point3r> ps;
+  std::vector<Vec3r> ps;
   ps.emplace_back((real_t)1, (real_t)2, (real_t)3);
   ps.emplace_back((real_t)2, (real_t)1, (real_t)3);
   linalg::matrix_i_t fs(1, 3);
@@ -55,10 +55,10 @@ TEST(TestPDConstraint, DistCons) {
 TEST(TestPDConstraint, DistCons1) {
   using namespace doux;
 
-  std::vector<Point3r> ps;
+  std::vector<Vec3r> ps;
   ps.emplace_back((real_t)1, (real_t)2, (real_t)3);
   ps.emplace_back((real_t)2, (real_t)1, (real_t)3);
-  Point3r p0((real_t)2, (real_t)1, (real_t)3);
+  Vec3r p0((real_t)2, (real_t)1, (real_t)3);
   linalg::matrix_i_t fs(1, 3);
 
   pd::Softbody sb(std::move(ps), std::move(fs));

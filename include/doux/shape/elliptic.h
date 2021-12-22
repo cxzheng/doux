@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cassert>
-#include "doux/core/point.h"
+#include "doux/core/svec.h"
 #include "doux/core/format.h"
 
 NAMESPACE_BEGIN(doux::shape)
@@ -17,7 +17,7 @@ class Elliptic {
   Elliptic& operator = (const Elliptic& v) = default;
   Elliptic& operator = (Elliptic&& v) noexcept = default;
 
-  Elliptic(const Point<T_, D_>& c, const SVector<T_, D_>& abc) 
+  Elliptic(const SVector<T_, D_>& c, const SVector<T_, D_>& abc) 
       : ctr_{c}, coeff_{abc} {
 #ifndef NDEBUG
     for(size_t i = 0;i < D_;++ i) 
@@ -50,13 +50,13 @@ class Elliptic {
   }
 
   [[nodiscard]] 
-  bool contain(const Point<T_, D_>& pt) const noexcept {
+  bool contain(const SVector<T_, D_>& pt) const noexcept {
       // requires requires(T_ a) { { a*a } ->std::same_as<T_>; } {
     return ((pt - ctr_).sqr() * coeff_).hsum() < (T_)1;
   }
 
  private:
-  Point<T_, D_> ctr_;
+  SVector<T_, D_> ctr_;
   SVector<T_, D_> coeff_;
 };
 

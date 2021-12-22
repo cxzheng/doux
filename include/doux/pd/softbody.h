@@ -6,7 +6,7 @@
 
 #include <vector>
 #include "doux/core/platform.h"
-#include "doux/core/point.h"
+#include "doux/core/svec.h"
 #include "doux/linalg/num_types.h"
 
 NAMESPACE_BEGIN(doux::pd)
@@ -36,7 +36,7 @@ class Softbody {
   [[nodiscard]] DOUX_ALWAYS_INLINE size_t num_vtx() const noexcept { return pos_.size(); }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
-  std::vector<Point3r>& vtx_pos() { return pos_; }
+  std::vector<Vec3r>& vtx_pos() { return pos_; }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   auto const& vtx_pos(size_t vid) const { 
@@ -80,9 +80,9 @@ class Softbody {
  protected:
   // list of vertices sampled on the body (volume or cloth)
   // position, velocity, mass
-  std::vector<Point3r>  pos_;   // vertex positions
-  std::vector<Vec3r>    vel_;   // vertex velocity
-  std::vector<real_t>   mass_;  // mass
+  std::vector<Vec3r>  pos_;   // vertex positions
+  std::vector<Vec3r>  vel_;   // vertex velocity
+  std::vector<real_t> mass_;  // mass
 
   // surface vertex information for collision detection
   // This is a M x N matrix, where M is the number of surface faces,
@@ -96,7 +96,7 @@ class Softbody {
 // Extend the softbody to enable fixed and scripted vertices
 class MotiveBody : public Softbody {
  public:
-  using MotionFunc = std::function<Point3r(const Point3r&, real_t)>;
+  using MotionFunc = std::function<Vec3r(const Vec3r&, real_t)>;
 
   template<typename POS_, typename FS_>
   MotiveBody(POS_&& pos, FS_&& fs) : 
@@ -105,7 +105,7 @@ class MotiveBody : public Softbody {
   // This constructor will be called by `build_softbody` in motion_preset.h
   template<typename POS_, typename FS_>
   MotiveBody(POS_&& pos, FS_&& fs, size_t nfixed, 
-             std::vector<Point3r>&& p0,
+             std::vector<Vec3r>&& p0,
              std::vector<MotionFunc>&& script) : 
       Softbody{std::forward<POS_>(pos), std::forward<FS_>(fs)},
       num_fixed_{nfixed}, num_restricted_{nfixed + p0.size()},
@@ -142,7 +142,7 @@ class MotiveBody : public Softbody {
  protected:
   size_t    num_fixed_{0};         // number of fixed vertices
   size_t    num_restricted_{0};    // number of fixed + number of scripted
-  std::vector<Point3r>    p0_;       // initial positions of scripted vertices
+  std::vector<Vec3r>      p0_;       // initial positions of scripted vertices
   std::vector<MotionFunc> script_;   // scripted vertex motion, one for each scripted vertex
 };
 
@@ -166,7 +166,7 @@ class PBDBody : public MotiveBody {
   }
 
  private:
-  std::vector<Point3r>      pred_pos_; // predicted vertex positions
+  std::vector<Vec3r>      pred_pos_; // predicted vertex positions
   // list of constraints for generating internal forces
 };
 

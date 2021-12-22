@@ -1,6 +1,6 @@
 #pragma once
 
-#include "doux/core/point.h"
+#include "doux/core/svec.h"
 
 NAMESPACE_BEGIN(doux::shape)
 
@@ -19,7 +19,7 @@ class Cuboid {
   Cuboid& operator=(const Cuboid&) = default;
   Cuboid& operator=(Cuboid&&) noexcept = default;
 
-  Cuboid(const Point<T_, D_>& p1, const Point<T_, D_>& p2)
+  Cuboid(const SVector<T_, D_>& p1, const SVector<T_, D_>& p2)
       : min_pt_{p1}, max_pt_{p2} {
 #ifndef NDEBUG
     // Check if this is a valid cuboid at debugging time
@@ -68,7 +68,7 @@ class Cuboid {
     return *this;
   }
 
-  [[nodiscard]] bool contain(const Point<T_, D_>& pt) const noexcept {
+  [[nodiscard]] bool contain(const SVector<T_, D_>& pt) const noexcept {
     if constexpr (D_ == 2) {
       return pt.x() >= min_pt_.x() && pt.x() <= max_pt_.x() &&
              pt.y() >= min_pt_.y() && pt.y() <= max_pt_.y();
@@ -86,15 +86,15 @@ class Cuboid {
 
   // return the center of the cuboid
   [[nodiscard]] DOUX_ALWAYS_INLINE DOUX_ATTR(pure) 
-  const Point<T_, D_> c() const noexcept {
+  const SVector<T_, D_> c() const noexcept {
     return (min_pt_ + max_pt_)*(T_)0.5;
   }
 
  private:
   /// Minimum point of the cuboid
-  Point<T_, D_> min_pt_;
+  SVector<T_, D_> min_pt_;
   /// Maximum point of the cuboid
-  Point<T_, D_> max_pt_;
+  SVector<T_, D_> max_pt_;
 };
 // clang-format on
 

@@ -1,9 +1,8 @@
 set(TEST_SRC 
     test_svec.cpp       test_shape.cpp
-    test_point.cpp      test_softbody.cpp
-    test_constraint.cpp test_motion_preset.cpp
+    test_softbody.cpp   test_constraint.cpp 
     test_mesh.cpp       test_motion_preset.cpp
-    test_elasty.cpp
+    test_elasty.cpp     test_motion_preset.cpp
 )
 
 set(TEST_LINK_LIBS
