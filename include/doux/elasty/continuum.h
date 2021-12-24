@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Eigen/Core>
 #include "doux/core/platform.h"
 #include <assert.h>
 
@@ -22,6 +23,37 @@ inline std::pair<real_t, real_t> lame_coeff(real_t youngs_modulus, real_t poisso
   auto sv = (real_t)1 / ((real_t)1 + poisson_ratio);
   return std::make_pair(youngs_modulus * poisson_ratio * sv / ((real_t)1 - poisson_ratio * (real_t)2),
                         youngs_modulus * sv * 0.5);
+}
+
+/*
+ * Calculate the Green strain tensor for a finite element.
+ *
+ * \param F The deformation gradient matrix, which should be either 2x2 (2D element in 2D), 3x3 (3D
+ * element in 3D), or 3x2 (2D element in 3D).
+ */
+template <typename Derived>
+Eigen::Matrix<typename Derived::Scalar, Derived::ColsAtCompileTime, Derived::ColsAtCompileTime>
+green_strain(const Eigen::MatrixBase<Derived>& F)
+{
+    using Mat = Eigen::Matrix<typename Derived::Scalar, Derived::ColsAtCompileTime, Derived::ColsAtCompileTime>;
+
+    return 0.5 * (F.transpose() * F - Mat::Identity());
+}
+
+/*
+ * See Eq. (3.2) in [1]
+ * F:     deformation gradient
+ * lame1: first Lame parameter
+ * lame2: second Lame parameter
+ */
+template <typename Derived>
+typename Derived::Scalar stvk_energy_density(const Eigen::MatrixBase<Derived>& F, 
+                                             const typename Derived::Scalar lame1,
+                                             const typename Derived::Scalar lame2) {
+  auto const E = green_strain(F);
+  auto const t = E.trace();
+
+  return lame2 * E.squaredNorm() + 0.5 * lame1 * t * t;
 }
 
 NAMESPACE_END(doux::elasty)
