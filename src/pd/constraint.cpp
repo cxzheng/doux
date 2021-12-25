@@ -157,9 +157,9 @@ void StVKTriCFunc::grad(std::span<real_t> grad_ret) {
   const Eigen::Matrix<real_t, 3, 2> grad_12 = area_ * P * D_inv_.transpose();
   const Eigen::Matrix<real_t, 3, 1>  grad_0 = -grad_12.col(0) - grad_12.col(1);
 
-    // Copy the results
-    std::memcpy(grad_ret.data(), grad_0.data(), sizeof(real_t) * 3);
-    std::memcpy(grad_ret.data() + 3, grad_12.data(), sizeof(real_t) * 6);
+  // Copy the results
+  std::memcpy(grad_ret.data(), grad_0.data(), sizeof(real_t) * 3);
+  std::memcpy(grad_ret.data() + 3, grad_12.data(), sizeof(real_t) * 6);
 }
 
 NAMESPACE_END(doux::pd)

@@ -121,4 +121,54 @@ TEST(TestPDConstraint, StvkTriCons1) {
     auto v1 = func.c();
     EXPECT_NEAR(0, v1, doux::eps<real_t>::v);
   }
+
+  real_t grad[9];
+  func.grad(grad);
+
+  auto& pos = sb.vtx_pos();
+#if DOUX_USE_FLOAT64
+  real_t eps = 1E-8;
+#else
+  real_t eps = 1E-4;
+#endif
+  {
+    pos[0].y() -= eps;
+    auto v1 = func.c();
+    pos[0].y() += 2*eps;
+    auto v2 = func.c();
+
+#if DOUX_USE_FLOAT64
+    EXPECT_NEAR(grad[1], (v2-v1)/(2*eps), 1E-7);
+#else
+    EXPECT_NEAR(grad[1], (v2-v1)/(2*eps), 1E-3);
+#endif
+  }
+
+  {
+    func.grad(grad);
+    pos[1].z() -= eps;
+    auto v1 = func.c();
+    pos[1].z() += 2*eps;
+    auto v2 = func.c();
+
+#if DOUX_USE_FLOAT64
+    EXPECT_NEAR(grad[5], (v2-v1)/(2*eps), 1E-7);
+#else
+    EXPECT_NEAR(grad[5], (v2-v1)/(2*eps), 1E-3);
+#endif
+  }
+
+  {
+    func.grad(grad);
+    pos[2].x() -= eps;
+    auto v1 = func.c();
+    pos[2].x() += 2*eps;
+    auto v2 = func.c();
+
+#if DOUX_USE_FLOAT64
+    EXPECT_NEAR(grad[6], (v2-v1)/(2*eps), 1E-7);
+#else
+    EXPECT_NEAR(grad[6], (v2-v1)/(2*eps), 1E-3);
+#endif
+  }
 }
