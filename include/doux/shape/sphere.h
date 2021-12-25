@@ -11,7 +11,7 @@ requires(D_ > 1 && std::is_arithmetic_v<T_>)
 class Sphere {
  public:
   /// By default, a unit sphere centered at the origin
-  Sphere() noexcept : rad_{static_cast<T_>(1.)}, r2_{rad_} {}
+  Sphere() noexcept : ctr_{static_cast<T_>(0)}, rad_{static_cast<T_>(1)}, r2_{rad_} {}
   Sphere(const Sphere&) = default;
   Sphere(Sphere&&) noexcept = default;
 

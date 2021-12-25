@@ -56,4 +56,23 @@ typename Derived::Scalar stvk_energy_density(const Eigen::MatrixBase<Derived>& F
   return lame2 * E.squaredNorm() + 0.5 * lame1 * t * t;
 }
 
+/*
+ * See Eq. (3.3) in [1]
+ * Return the 1st Piola-Kirchhoff stress tensor
+ * 
+ * F:     deformation gradient
+ * lame1: first Lame parameter
+ * lame2: second Lame parameter
+ */
+template <typename Derived>
+Eigen::Matrix<typename Derived::Scalar, Derived::RowsAtCompileTime, Derived::ColsAtCompileTime>
+stvk_1st_pk_stress(const Eigen::MatrixBase<Derived>& F,
+                   const typename Derived::Scalar    lame1,
+                   const typename Derived::Scalar    lame2) {
+  using EMat = Eigen::Matrix<typename Derived::Scalar, Derived::ColsAtCompileTime, Derived::ColsAtCompileTime>;
+  const auto E = green_strain(F);
+
+  return F * (2.0 * lame2 * E + lame1 * E.trace() * EMat::Identity());
+}
+
 NAMESPACE_END(doux::elasty)

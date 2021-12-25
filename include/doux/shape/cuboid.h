@@ -12,7 +12,7 @@ requires(D_ > 1 && std::is_arithmetic_v<T_>)
 class Cuboid {
  public:
   /// By default, a unit cube with the min point at the origin
-  Cuboid() noexcept : max_pt_{static_cast<T_>(1.)} {}
+  Cuboid() noexcept : min_pt_{static_cast<T_>(0)}, max_pt_{static_cast<T_>(1)} {}
   Cuboid(const Cuboid&) = default;
   Cuboid(Cuboid&&) noexcept = default;
 

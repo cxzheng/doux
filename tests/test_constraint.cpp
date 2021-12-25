@@ -89,3 +89,36 @@ TEST(TestPDConstraint, DistCons1) {
   EXPECT_NEAR(grad[1], (v2-v1)/(2*eps), 1E-3);
 #endif
 }
+
+TEST(TestPDConstraint, StvkTriCons0) {
+  using namespace doux;
+
+  std::vector<Vec3r> ps;
+  ps.emplace_back((real_t)0, (real_t)0, (real_t)0);
+  ps.emplace_back((real_t)1, (real_t)0, (real_t)0);
+  ps.emplace_back((real_t)0, (real_t)2, (real_t)0);
+  linalg::matrix_i_t fs(1, 3);
+  fs << 0, 1, 2;
+
+  pd::Softbody sb(std::move(ps), std::move(fs));
+  pd::StVKTriCFunc func(&sb, 0, 1, 2, 600, 0.45);
+  EXPECT_APPROX_EQ(1, func.tri_area());
+}
+
+TEST(TestPDConstraint, StvkTriCons1) {
+  using namespace doux;
+
+  std::vector<Vec3r> ps;
+  ps.emplace_back((real_t)0, (real_t)0, (real_t)0);
+  ps.emplace_back((real_t)1, (real_t)2, (real_t)3);
+  ps.emplace_back((real_t)2, (real_t)1, (real_t)3);
+  linalg::matrix_i_t fs(1, 3);
+  fs << 0, 1, 2;
+
+  pd::Softbody sb(std::move(ps), std::move(fs));
+  pd::StVKTriCFunc func(&sb, 0, 1, 2, 600, 0.45);
+  {
+    auto v1 = func.c();
+    EXPECT_NEAR(0, v1, doux::eps<real_t>::v);
+  }
+}

@@ -4,6 +4,9 @@
 #include "doux/pd/constraint.h"
 #include "doux/elasty/continuum.h"
 
+#include <iostream>
+#include "doux/core/format.h"
+
 NAMESPACE_BEGIN(doux::pd)
 
 [[nodiscard]] real_t DistCFunc::c() const {
@@ -91,8 +94,8 @@ StVKTriCFunc::StVKTriCFunc(Softbody* sb, uint32_t v0, uint32_t v1, uint32_t v2,
   auto const cxs = cross(X10, X20);
   area_ = cxs.norm();
   assert(area_ > eps<real_t>::v);
-  auto const ax1 = cxs / area_;     // normalize X10
   area_ *= 0.5;                     // triangle area
+  auto const ax1 = X10.normalize(); // normalize X10
   auto const ax2 = cross(cxs, ax1).normalize();
   
   const linalg::vec2_r_t proj_x_0(ax1.dot(X0), ax2.dot(X0));
@@ -121,12 +124,42 @@ StVKTriCFunc::StVKTriCFunc(Softbody* sb, uint32_t v0, uint32_t v1, uint32_t v2,
        x10.z(), x20.z();
   
   auto const F = D * D_inv_;  // Deformation gradient (3x2 matrix)
-
   // compute strain energy density
   return area_ * elasty::stvk_energy_density(F, lame_coeff_[0], lame_coeff_[1]);
 }
 
 void StVKTriCFunc::grad(std::span<real_t> grad_ret) {
+#ifndef NDEBUG
+  // In debug mode, check the output array size
+  if (auto s = grad_ret.size(); s < 9) {
+    throw std::out_of_range(
+        fmt::format("Insufficient output array space:"
+                    "L = {0:d}, but 9 is needed", s));
+  }
+#endif
+
+  auto const& x0 = body_->vtx_pos(v_[0]); // vec3r
+  auto const& x1 = body_->vtx_pos(v_[1]);
+  auto const& x2 = body_->vtx_pos(v_[2]);
+
+  auto const x10 = x1 - x0;
+  auto const x20 = x2 - x0;
+
+  Eigen::Matrix<real_t, 3, 2> D;
+  D << x10.x(), x20.x(),
+       x10.y(), x20.y(),
+       x10.z(), x20.z();
+  
+  auto const F = D * D_inv_;  // Deformation gradient (3x2 matrix)
+  auto const P = elasty::stvk_1st_pk_stress(F, lame_coeff_[0], lame_coeff_[1]);
+
+  // Calculate the gradient of the constraint
+  const Eigen::Matrix<real_t, 3, 2> grad_12 = area_ * P * D_inv_.transpose();
+  const Eigen::Matrix<real_t, 3, 1>  grad_0 = -grad_12.col(0) - grad_12.col(1);
+
+    // Copy the results
+    std::memcpy(grad_ret.data(), grad_0.data(), sizeof(real_t) * 3);
+    std::memcpy(grad_ret.data() + 3, grad_12.data(), sizeof(real_t) * 6);
 }
 
 NAMESPACE_END(doux::pd)
