@@ -154,7 +154,7 @@ void StVKTriCFunc::grad(std::span<real_t> grad_ret) {
   auto const P = elasty::stvk_1st_pk_stress(F, lame_coeff_[0], lame_coeff_[1]);
 
   // Calculate the gradient of the constraint
-  const Eigen::Matrix<real_t, 3, 2> grad_12 = area_ * P * D_inv_.transpose();
+  const Eigen::Matrix<real_t, 3, 2> grad_12 = P * D_inv_.transpose() * area_;
   const Eigen::Matrix<real_t, 3, 1>  grad_0 = -grad_12.col(0) - grad_12.col(1);
 
   // Copy the results
