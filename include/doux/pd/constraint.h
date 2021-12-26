@@ -116,7 +116,7 @@ class StVKTriCFunc : public CFunc {
 
   void grad(std::span<real_t> grad_ret) override;
 
-  [[nodiscard]] DOUX_ALWAYS_INLINE real_t tri_area() const { return area_; }
+  [[nodiscard]] DOUX_ALWAYS_INLINE real_t tri_area() const noexcept { return area_; }
 
  private:
   uint32_t  v_[3];          // triangle vertex IDs
@@ -153,6 +153,12 @@ class SurfBendingCFunc : public CFunc {
   *                  (0)
   */
   uint32_t        v_[4];
+};
+
+/*
+ * Isometric bending constraint for a surface (2D manifold)
+ */
+class SurfIsoBendingCFunc : public CFunc {
 };
 
 #if 0

@@ -8,6 +8,7 @@
 #include "doux/core/platform.h"
 #include "doux/core/svec.h"
 #include "doux/linalg/num_types.h"
+#include "constraint.h"
 
 NAMESPACE_BEGIN(doux::pd)
 
@@ -168,6 +169,7 @@ class PBDBody : public MotiveBody {
  private:
   std::vector<Vec3r>      pred_pos_; // predicted vertex positions
   // list of constraints for generating internal forces
+  std::vector<std::unique_ptr<CFunc>> cons_;        
 };
 
 NAMESPACE_END(doux::pd)

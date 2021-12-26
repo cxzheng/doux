@@ -40,6 +40,7 @@ struct SimStats {
 /*
  * XPBD simulator
  *
+ * ExtForce_: model for applying external force (e.g., gravity)
  * ExtCons_: generate and process external constraints.
  */
 template <class Scene_, 
@@ -54,6 +55,15 @@ class XPBDSim {
   SimStats  status_;
   Scene_    scene_;   // simulation scene
   ExtForce_ ext_f_;   // external force
+};
+
+/*
+ * Projective dynamics simulator
+ */
+class ProjDynSim {
+ public:
+  /// Timestep the simulation
+  size_t step();
 };
 
 // --------------------------------------------------------------------------------

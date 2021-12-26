@@ -27,10 +27,7 @@ class Scene {
   /// a list of soft bodies to be simulated
   std::vector<PBDBody> sb_;
 
-  /// a list of fixed objects (e.g., ground)
-
-  /// a list of preset object motions
-  std::vector<MotionPreset>
+  /// a list of fixed objects (e.g., ground and the environment)
 
   CD_ coll_det_;	// collision detector
 };
