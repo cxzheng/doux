@@ -150,7 +150,7 @@ class MotiveBody : public Softbody {
 // -----------------------------------------------------------------------
 
 // Extend to use constraints to generate internal forces, so they can be used
-// in PBD framework.
+// in PD framework.
 class PBDBody : public MotiveBody {
  public:
   // Explicitly update vel. and pos. by a uniform acceleration 

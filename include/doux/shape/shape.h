@@ -6,6 +6,7 @@
 #include "cuboid.h"
 #include "sphere.h"
 #include "elliptic.h"
+#include "plane.h"
 
 NAMESPACE_BEGIN(doux)
 
@@ -14,6 +15,7 @@ NAMESPACE_BEGIN(doux)
 template <typename T, size_t D> using Cube = shape::Cuboid<T, D>;
 template <typename T, size_t D> using Sphere = shape::Sphere<T, D>;
 template <typename T, size_t D> using Elliptic = shape::Elliptic<T, D>;
+template <typename T, size_t D> using Plane = shape::Plane<T, D>;
 
 template <typename T> using Rect = Cube<T, 2>;
 template <typename T> using Circle = Sphere<T, 2>;

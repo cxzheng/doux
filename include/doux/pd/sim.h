@@ -60,6 +60,9 @@ class XPBDSim {
 /*
  * Projective dynamics simulator
  */
+template <class Scene_, 
+          class ExtForce_ = std::monostate, 
+          class ExtCons_ = std::monostate>
 class ProjDynSim {
  public:
   /// Timestep the simulation

@@ -117,3 +117,12 @@ TEST(ShapeTest, variant) {
     FAIL() << "prect shouldn't be null";
   }
 }
+
+TEST(ShapeTest, plane) {
+  using ::doux::Plane;
+  using ::doux::Vec3d;
+
+  Plane<double, 3> plane(Vec3d{0., 1., 0.}, Vec3d{1., 1., 1.});
+  EXPECT_DOUBLE_EQ(-1., plane.distance(Vec3d{0., 0., 0.}));
+  EXPECT_DOUBLE_EQ(1., plane.distance(Vec3d{2., 2., -1.}));
+}
