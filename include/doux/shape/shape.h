@@ -21,6 +21,7 @@ template <typename T> using Rect = Cube<T, 2>;
 template <typename T> using Circle = Sphere<T, 2>;
 template <typename T> using Cube3 = Cube<T, 3>;
 template <typename T> using Sphere3 = Sphere<T, 3>;
+template <typename T> using Plane3 = Plane<T, 3>;     // 3D plane
 template <typename T> using Ellipse = Elliptic<T, 2>;
 template <typename T> using Ellipsoid = Elliptic<T, 3>;
 

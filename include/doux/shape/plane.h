@@ -3,6 +3,7 @@
 #include <cassert>
 #include "doux/core/math_func.h"
 #include "doux/core/svec.h"
+#include "doux/core/math_func.h"
 
 NAMESPACE_BEGIN(doux::shape)
 
@@ -19,8 +20,10 @@ class Plane {
   Plane& operator = (const Plane&) = default;
   Plane& operator = (Plane&&) = default;
 
-  Plane(const SVector<T_, D_>& n, const SVector<T_, D_>& p) noexcept 
-	: n_{n}, p_{p} {}
+  Plane(const SVector<T_, D_>& n, const SVector<T_, D_>& p) :
+	    n_{n.normalize()}, p_{p} {
+    assert(n.norm2() > eps<T_>::v);
+  }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   bool on_plane(const SVector<T_, D_>& x) const noexcept {
@@ -32,6 +35,9 @@ class Plane {
   T_ distance(const SVector<T_, D_>& x) const noexcept {
     return n_.dot(x - p_);
   }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE DOUX_ATTR(pure) 
+  auto const& n() const noexcept { return n_; }
 
  private:
   SVector<T_, D_> n_;	// normal dir

@@ -74,7 +74,7 @@ void UnitaryDistCFunc::grad(std::span<real_t> grad_ret) {
 
 // -------------------------------------------------------------------------------
 
-StVKTriCFunc::StVKTriCFunc(Softbody* sb, uint32_t v0, uint32_t v1, uint32_t v2, 
+StVKTriCFunc::StVKTriCFunc(MotiveBody* sb, uint32_t v0, uint32_t v1, uint32_t v2, 
                            real_t youngs_modulus, real_t poisson_ratio) : 
                            CFunc(sb), v_{v0, v1, v2} {
   assert(sb);
@@ -160,6 +160,60 @@ void StVKTriCFunc::grad(std::span<real_t> grad_ret) {
   // Copy the results
   std::memcpy(grad_ret.data(), grad_0.data(), sizeof(real_t) * 3);
   std::memcpy(grad_ret.data() + 3, grad_12.data(), sizeof(real_t) * 6);
+}
+
+// -------------------------------------------------------------------------------
+
+[[nodiscard]] real_t PlaneCollisionCFunc::c() const {
+  auto d = plane_.distance(body_->vtx_pos(v_));
+  return std::min(d, static_cast<real_t>(0));
+}
+
+void PlaneCollisionCFunc::grad(std::span<real_t> grad_ret) {
+#ifndef NDEBUG
+  // In debug mode, check the output array size
+  if (auto s = grad_ret.size(); s < 3) {
+    throw std::out_of_range(
+        fmt::format("Insufficient output array space:"
+                    "L = {0:d}, but 3 is needed", s));
+  }
+#endif
+  auto d = plane_.distance(body_->vtx_pos(v_));
+
+  if ( d < (real_t)0 ) [[likely]] {
+    auto const& n = plane_.n();
+    grad_ret[0] = n.x();
+    grad_ret[1] = n.y();
+    grad_ret[2] = n.z();
+  } else {
+    grad_ret[0] = 0;
+    grad_ret[1] = 0;
+    grad_ret[2] = 0;
+  }
+}
+
+real_t PlaneCollisionCFunc::c_and_grad(std::span<real_t> grad_ret) {
+#ifndef NDEBUG
+  // In debug mode, check the output array size
+  if (auto s = grad_ret.size(); s < 3) {
+    throw std::out_of_range(
+        fmt::format("Insufficient output array space:"
+                    "L = {0:d}, but 3 is needed", s));
+  }
+#endif
+  auto d = plane_.distance(body_->vtx_pos(v_));
+  if ( d < (real_t)0 ) [[likely]] {
+    auto const& n = plane_.n();
+    grad_ret[0] = n.x();
+    grad_ret[1] = n.y();
+    grad_ret[2] = n.z();
+    return d;
+  } 
+
+  grad_ret[0] = 0;
+  grad_ret[1] = 0;
+  grad_ret[2] = 0;
+  return 0;
 }
 
 NAMESPACE_END(doux::pd)

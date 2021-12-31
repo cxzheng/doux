@@ -5,6 +5,7 @@
  */
 
 #include <vector>
+#include <span>
 #include "doux/core/platform.h"
 #include "doux/core/svec.h"
 #include "doux/linalg/num_types.h"
@@ -101,7 +102,8 @@ class MotiveBody : public Softbody {
 
   template<typename POS_, typename FS_>
   MotiveBody(POS_&& pos, FS_&& fs) : 
-      Softbody{std::forward<POS_>(pos), std::forward<FS_>(fs)} {}
+      Softbody{std::forward<POS_>(pos), std::forward<FS_>(fs)},
+      num_free_{pos_.size()}, pred_pos_{pos_.size()} {}
 
   // This constructor will be called by `build_softbody` in motion_preset.h
   template<typename POS_, typename FS_>
@@ -110,8 +112,10 @@ class MotiveBody : public Softbody {
              std::vector<MotionFunc>&& script) : 
       Softbody{std::forward<POS_>(pos), std::forward<FS_>(fs)},
       num_fixed_{nfixed}, num_restricted_{nfixed + p0.size()},
-      p0_{std::move(p0)}, script_{std::move(script)} {
-    assert(p0_.size() == script_.size());
+      num_free_{pos_.size() - num_restricted_},
+      p0_{std::move(p0)}, script_{std::move(script)}, 
+      pred_pos_{pos_.size()} {
+    assert(p0_.size() == script_.size() && num_restricted_ <= pos_.size());
   }
 
   MotiveBody() = delete;
@@ -122,12 +126,15 @@ class MotiveBody : public Softbody {
 
   // -------------------------------------------------
 
-  // update the position of scripted vertices, if any
-  inline void update_scripted(real_t t) {
-    for(size_t i = num_fixed_;i < num_restricted_;++ i) {
-      auto const j = i - num_fixed_;
-      pos_[i] = script_[j](p0_[j], t);
-    }
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  bool is_fixed(size_t vid) const { return vid < num_fixed_; }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  bool is_restricted(size_t vid) const { return vid < num_restricted_; }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  std::span<Vec3r const> free_vtx_pos() const { 
+    return std::span{pos_.data() + num_restricted_, num_free_};
   }
 
   [[nodiscard]] DOUX_ALWAYS_INLINE 
@@ -140,11 +147,35 @@ class MotiveBody : public Softbody {
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   auto const& init_scripted_pos() const { return p0_; }
 
+  // Explicitly update vel. and pos. by a uniform acceleration 
+  // v += a*dt
+  // p += v*dt
+  void predict_vel_pos(const Vec3r& a, real_t dt);
+
+  // Explicitly update vel. and pos. by a uniform acceleration 
+  // v stays unchanged
+  // p += v*dt
+  void predict_pos(real_t dt); 
+
+  // finish iterations and update the vel. and positions
+  void update_vel_pos(real_t dt);
+
+  // update the position of scripted vertices, if any
+  void update_scripted(real_t t) {
+    for(size_t i = num_fixed_;i < num_restricted_;++ i) {
+      auto const j = i - num_fixed_;
+      pos_[i] = script_[j](p0_[j], t);
+      pred_pos_[i] = pos_[i];
+    }
+  }
+
  protected:
-  size_t    num_fixed_{0};         // number of fixed vertices
-  size_t    num_restricted_{0};    // number of fixed + number of scripted
-  std::vector<Vec3r>      p0_;       // initial positions of scripted vertices
-  std::vector<MotionFunc> script_;   // scripted vertex motion, one for each scripted vertex
+  size_t    num_fixed_{0};          // number of fixed vertices
+  size_t    num_restricted_{0};     // number of fixed + number of scripted
+  size_t    num_free_{0};           // number of free vertices
+  std::vector<Vec3r>      p0_;      // initial positions of scripted vertices
+  std::vector<MotionFunc> script_;  // scripted vertex motion, one for each scripted vertex
+  std::vector<Vec3r>      pred_pos_;// to store predicted vertex positions
 };
 
 // -----------------------------------------------------------------------
@@ -153,23 +184,15 @@ class MotiveBody : public Softbody {
 // in PD framework.
 class PBDBody : public MotiveBody {
  public:
-  // Explicitly update vel. and pos. by a uniform acceleration 
-  // v += a*dt
-  // p += v*dt
-  void predict_vel_pos(const Vec3r& a, real_t dt);
-
-  // update the position of scripted vertices, if any
-  void update_scripted(real_t t) {
-    MotiveBody::update_scripted(t);
-    for(size_t i = num_fixed_;i < num_restricted_;++ i) {
-      pred_pos_[i] = pos_[i];
-    }
-  }
-
  private:
-  std::vector<Vec3r>      pred_pos_; // predicted vertex positions
   // list of constraints for generating internal forces
   std::vector<std::unique_ptr<CFunc>> cons_;        
+};
+
+class ProjDynBody : public MotiveBody {
+ public:
+  // the project (local solve) step
+  void project();
 };
 
 NAMESPACE_END(doux::pd)
