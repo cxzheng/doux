@@ -66,6 +66,7 @@ class XPBDSim {
  * DataProc_: type for processing simulated data (e.g., storing into a file)
  */
 template <class Scene_, 
+          class GlobalSolver_,
           class ExtForce_ = std::monostate,
           class DataProc_ = std::monostate> 
 class ProjDynSim {
@@ -74,7 +75,14 @@ class ProjDynSim {
   size_t step();
 
  private:
-  SimStats  status_;
+  // initialize the simulation
+  // e.g., allocate memory / data structure
+  void init(); 
+
+ private:
+  SimStats      status_;
+  Scene_        scene_;   // simulation scene
+  GlobalSolver_ solver_;
 };
 
 #include "sim-impl.h"

@@ -8,6 +8,7 @@
 #include "doux/doux.h"
 #include "softbody.h"
 #include "motion_preset.h"
+#include "projective_energy.h"
 
 NAMESPACE_BEGIN(doux::pd)
 
@@ -43,14 +44,28 @@ class PBDScene {
 /*
  * Scene for projective dyamics simulation
  */
+template <class CD_ = std::monostate>
 class ProjDynScene {
  public:
+  ProjDynBody(std::vector<ProjDynBody>&& b);
+
+   [[nodiscard]] DOUX_ALWAYS_INLINE 
+   std::vector<ProjDynBody>& deformables() { return sb_; }
+
+   [[nodiscard]] DOUX_ALWAYS_INLINE 
+   const std::vector<ProjDynBody>& deformables() const { return sb_; }
+
+ private:
+  /// a list of soft bodies to be simulated
+  std::vector<ProjDynBody> sb_;
+
+  CD_ coll_det_;	// collision detector among softbodies
+
+  // energy terms introduced by softbody colliding with each other and
+  // with the environment
+  std::vector<std::unique_ptr<ProjEnergy>>  colli_cons_;
 };
 
 // ------------------------------------------------------------------------------------
-
-template <class CD_>
-void PBDScene<CD_>::update_colli_cons() {
-}
 
 NAMESPACE_END(doux::pd)

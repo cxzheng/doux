@@ -10,6 +10,7 @@
 #include "doux/core/svec.h"
 #include "doux/linalg/num_types.h"
 #include "constraint.h"
+#include "projective_energy.h"
 
 NAMESPACE_BEGIN(doux::pd)
 
@@ -137,11 +138,17 @@ class MotiveBody : public Softbody {
     return std::span{pos_.data() + num_restricted_, num_free_};
   }
 
+  // return the number of fixed vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   size_t num_fixed_vs() const { return num_fixed_; }
 
+  // return the number of scripted vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   size_t num_scripted_vs() const { return p0_.size(); }
+
+  // return the number of free vertices
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  size_t num_free_vs() const { return num_free_; }
 
   // return the initial positions of scripted vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE 
@@ -163,9 +170,8 @@ class MotiveBody : public Softbody {
   // update the position of scripted vertices, if any
   void update_scripted(real_t t) {
     for(size_t i = num_fixed_;i < num_restricted_;++ i) {
-      auto const j = i - num_fixed_;
-      pos_[i] = script_[j](p0_[j], t);
-      pred_pos_[i] = pos_[i];
+      auto const j = i - num_fixed_;    // index of the scripted vertex in p0 list
+      pred_pos_[i] = pos_[i] = script_[j](p0_[j], t);
     }
   }
 
@@ -180,9 +186,16 @@ class MotiveBody : public Softbody {
 
 // -----------------------------------------------------------------------
 
+
+template <class Scene_, class GlobalSolver_, class ExtForce_, class DataProc_> 
+class ProjDynSim;
+
 // Extend to use constraints to generate internal forces, so they can be used
 // in PD framework.
 class PBDBody : public MotiveBody {
+ template <class Scene_, class GlobalSolver_, class ExtForce_, class DataProc_> 
+ friend class ProjDynSim;
+
  public:
  private:
   // list of constraints for generating internal forces
@@ -193,6 +206,17 @@ class ProjDynBody : public MotiveBody {
  public:
   // the project (local solve) step
   void project();
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE uint32_t id() const { return id_; }
+
+ private:
+  // the ID will be set by `ProjDynScene`
+  void set_id(uint32_t id) noexcept { id_ = id; }
+
+ private:
+  uint32_t id_;
+  // the softbody's implicit energy terms
+  std::vector<std::unique_ptr<ProjEnergy>> e_; 
 };
 
 NAMESPACE_END(doux::pd)

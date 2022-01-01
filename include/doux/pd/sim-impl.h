@@ -43,8 +43,18 @@ size_t XPBDSim<Scene_, ExtForce_>::step() {
 
 // --------------------------------------------------------------------------------
 
-template <class Scene_, class ExtForce_, class DataProc_> 
-size_t ProjDynSim<Scene_, ExtForce_, DataProc_>::step() {
+template <class Scene_, class GlobalSolver_, class ExtForce_, class DataProc_> 
+void ProjDynSim<Scene_, GlobalSolver_, ExtForce_, DataProc_>::init() {
+  size_t N = 0;
+  uint32_t id = 0;
+  for(auto& b : scene_.deformables()) {
+    N += b.num_free_vs();
+    b.set_id(id ++);
+  }
+}
+
+template <class Scene_, class GlobalSolver_, class ExtForce_, class DataProc_> 
+size_t ProjDynSim<Scene_, GlobalSolver_, ExtForce_, DataProc_>::step() {
   // timestep by external forces
   if constexpr (!std::is_same_v<ExtForce_, std::monostate>) {
     for(auto& sb : scene_.deformables()) {
@@ -66,6 +76,9 @@ size_t ProjDynSim<Scene_, ExtForce_, DataProc_>::step() {
   }
 
   scene_.update_colli_cons(); // update collision constraints
+
+  // load position data in a single vector
+
   for(auto i = 0;i < status_.num_iter;++ i) {
     // --- local solve ---
     for(auto& sb : scene_.deformables()) {
@@ -77,6 +90,8 @@ size_t ProjDynSim<Scene_, ExtForce_, DataProc_>::step() {
     }
 
     // --- global solve ---
+    // populate the RHS vector b
+    // solve Ax = b
   } // end subiter
 
   // update vel. and pos
