@@ -6,8 +6,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_BINARY
 
 include(HunterGate)
 HunterGate(
-  URL "https://github.com/cpp-pm/hunter/archive/v0.23.318.tar.gz"
-  SHA1 "0475be76dbf51385790bbe96be57279e2ff0861d"
+  URL "https://github.com/cpp-pm/hunter/archive/v0.23.320.tar.gz"
+  SHA1 "9b4e732afd22f40482c11ad6342f7d336634226f"
 )
 
 project(doux)
