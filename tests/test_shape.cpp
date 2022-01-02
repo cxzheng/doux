@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "doux/shape/shape.h"
+#include "doux/shape/tet.h"
 
 TEST(ShapeTest, cuboid) {
   using ::doux::Rect;
@@ -130,5 +131,21 @@ TEST(ShapeTest, plane) {
   {
     Plane<double, 3> plane(Vec3d{1., 1., 1.}, Vec3d{0., 0., 0.});
     EXPECT_DOUBLE_EQ(sqrt(3.), plane.distance(Vec3d{1., 1., 1.}));
+  }
+}
+TEST(ShapeTest, TetVolume) {
+  using namespace doux;
+
+  {
+    Vec3d a(0., 1., 0.), b(0., 0., 1.), c(1., 0., 0.), d(1., 1., 1.);
+    auto v = shape::signed_tet_volume(a, b, c, d);
+    auto r = std::sqrt(2.);
+    EXPECT_DOUBLE_EQ(r*r*r/(6 * std::sqrt(2.)), v);
+  }
+  {
+    Vec3d a(0., 1., 0.), b(0., 0., 1.), c(1., 0., 0.), d(1., 1., 1.);
+    auto v = shape::signed_tet_volume(a, c, b, d);
+    auto r = std::sqrt(2.);
+    EXPECT_DOUBLE_EQ(-r*r*r/(6 * std::sqrt(2.)), v);
   }
 }

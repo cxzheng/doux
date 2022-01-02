@@ -29,7 +29,7 @@ class Softbody {
     assert(faces_.cols() == 3 && "faces must be a N x 3 index matrix");
 
     vel_.resize(pos_.size());
-    mass_.resize(pos_.size(), (real_t)1); // initalize with unit mass
+    mass_ = linalg::vector_r_t::Ones(pos_.size()); // initalize with unit mass
 
     for_each(vel_.begin(), vel_.end(), [] (auto& v) { v.set_zero(); });
   }
@@ -73,18 +73,21 @@ class Softbody {
     return ( vid >= mass_.size() ) ? throw std::out_of_range(fmt::format(
         "vtx_mass(vid) call: out of range access. Tried to access index {0:d}, "
         "but only {1:d} vertices exists", vid, mass_.size()))
-        : mass_[vid];
+        : mass_(vid);
 #else
-    return mass_[vid]; 
+    return mass_(vid); 
 #endif
   }
+
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  const linalg::vector_r_t& mass() const { return mass_; }
 
  protected:
   // list of vertices sampled on the body (volume or cloth)
   // position, velocity, mass
   std::vector<Vec3r>  pos_;   // vertex positions
   std::vector<Vec3r>  vel_;   // vertex velocity
-  std::vector<real_t> mass_;  // mass
+  linalg::vector_r_t  mass_;  // mass
 
   // surface vertex information for collision detection
   // This is a M x N matrix, where M is the number of surface faces,
@@ -144,6 +147,10 @@ class MotiveBody : public Softbody {
   // return the number of scripted vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   size_t num_scripted_vs() const { return p0_.size(); }
+
+  // return the number of restricted vertices (fixed + scripted)
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  size_t num_restricted_vs() const { return num_restricted_; }
 
   // return the number of free vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE 

@@ -14,6 +14,17 @@ using vector_r_t = Eigen::Matrix<real_t, Eigen::Dynamic, 1>;
 
 using mat2_r_t = Eigen::Matrix<real_t, 2, 2>;
 using vec2_r_t = Eigen::Matrix<real_t, 2, 1>;
+using mat2_f_t = Eigen::Matrix<float, 2, 2>;
+using vec2_f_t = Eigen::Matrix<float, 2, 1>;
+using mat2_d_t = Eigen::Matrix<double, 2, 2>;
+using vec2_d_t = Eigen::Matrix<double, 2, 1>;
+
+using mat3_r_t = Eigen::Matrix<real_t, 3, 3>;
+using vec3_r_t = Eigen::Matrix<real_t, 3, 1>;
+using mat3_f_t = Eigen::Matrix<float, 3, 3>;
+using vec3_f_t = Eigen::Matrix<float, 3, 1>;
+using mat3_d_t = Eigen::Matrix<double, 3, 3>;
+using vec3_d_t = Eigen::Matrix<double, 3, 1>;
 
 using matrix_ui_t = Eigen::Matrix<uint32_t, Eigen::Dynamic, Eigen::Dynamic>;
 using vector_ui_t = Eigen::Matrix<uint32_t, Eigen::Dynamic, 1>;

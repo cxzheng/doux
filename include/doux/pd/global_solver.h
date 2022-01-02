@@ -1,6 +1,7 @@
 #pragma once
 
 #include "doux/doux.h"
+#include "doux/linalg/num_types.h"
 #include "softbody.h"
 #include <unordered_map>
 #include <cstring>
@@ -41,18 +42,11 @@ class GlobalSolver {
   // Solve Ax = b
   virtual void solve() = 0;
 
-  // return the index of a vertex of a particular softbody
-  [[nodiscard]] DOUX_ALWAYS_INLINE
-  DOUX_ATTR(nonnull) size_t vtx_id(const ProjDynBody* sb, size_t vid) const {
-    assert(sb);
-    return body_vec_map_[sb->id()] + sb->free_vtx_id(vid);
-  }
-
   // -------------------------------------------------------------
   // these two methods will be called by ProjEnergy instances to 
   // fill in matrix elements according to their definitions
   void add_elem(const ProjDynBody* sb, size_t vid, real_t val) {
-    diag_[vtx_id(sb, vid)] += val;
+    diag_(vtx_id(sb, vid)) += val;
   }
 
   void add_elem(const ProjDynBody* sb1, size_t vid1,
@@ -65,6 +59,14 @@ class GlobalSolver {
   // -------------------------------------------------------------
 
  protected:
+  // return the index of a vertex of a particular softbody
+  [[nodiscard]] DOUX_ALWAYS_INLINE
+  DOUX_ATTR(nonnull) size_t vtx_id(const ProjDynBody* sb, size_t vid) const {
+    assert(sb);
+    return body_vec_map_[sb->id()] + sb->free_vtx_id(vid);
+  }
+
+ protected:
   struct MatElem {
     uint32_t cid {0}; // column ID of the matrix element
     real_t   val {0}; // the matrix entry value
@@ -75,20 +77,21 @@ class GlobalSolver {
 
   real_t dt2_;
 
-  std::vector<real_t> diag_;
-  std::vector<real_t> b_;  // RHS vector for Ax = b
-  std::vector<real_t> x_;  // x vector for storing solving results
-  std::vector<real_t> b0_; // M * s_n
-  std::vector<std::vector<MatElem>> off_diag_;
-
   // map each softbody ID to its starting position in the sparse matrix/vector
   // body_vec_map_[i]: the starting index in the sparse matrix/vector for 
   //                   the softbody with ID i
   std::vector<size_t> body_vec_map_;
 
+  linalg::vector_r_t diag_;
+  linalg::vector_r_t b_;  // RHS vector for Ax = b
+  linalg::vector_r_t x_;  // x vector for storing solving results
+  linalg::vector_r_t b0_; // M * s_n
+  
+  std::vector<std::vector<MatElem>> off_diag_;
+
   // backup the diag. elements, as the collision enregy terms 
   // may change them
-  std::vector<real_t> diag_backup_; 
+  linalg::vector_r_t diag_backup_; 
   std::vector<std::unordered_map<uint32_t, real_t>> off_diag_map_;
 };
 
