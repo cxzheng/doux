@@ -20,14 +20,6 @@ class MassForce {
 
   MassForce(const Vec3r& g) noexcept : g_(g) {}
 
-#if 0
-  // explicit euler timestepping the velocity
-  void step_vel(MotiveBody& body, real_t dt) const;
-
-  // explicit euler timestepping softbody vertex positions
-  void step_pos(MotiveBody& body, real_t dt) const;
-#endif
-
   [[nodiscard]] DOUX_ALWAYS_INLINE
   auto const& coeff() const { return g_; }
 
@@ -41,3 +33,11 @@ class MassForce {
 };
 
 NAMESPACE_END(doux::pd)
+
+#if 0
+  // explicit euler timestepping the velocity
+  void step_vel(MotiveBody& body, real_t dt) const;
+
+  // explicit euler timestepping softbody vertex positions
+  void step_pos(MotiveBody& body, real_t dt) const;
+#endif

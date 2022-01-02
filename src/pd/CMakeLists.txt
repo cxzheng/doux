@@ -2,6 +2,7 @@ project(pd)
 
 add_library(${PROJECT_NAME} OBJECT
   softbody.cpp      constraint.cpp
+  global_solver.cpp projective_energy.cpp
 )
 add_library(doux::pd ALIAS ${PROJECT_NAME})
 

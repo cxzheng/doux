@@ -10,7 +10,6 @@
 #include "doux/core/svec.h"
 #include "doux/linalg/num_types.h"
 #include "constraint.h"
-#include "projective_energy.h"
 
 NAMESPACE_BEGIN(doux::pd)
 
@@ -150,6 +149,14 @@ class MotiveBody : public Softbody {
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   size_t num_free_vs() const { return num_free_; }
 
+  // Return the vertex ID of a free vertex
+  // Must ensure the input vid refers to a free vertex
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  size_t free_vtx_id(size_t vid) const { 
+    assert(vid >= num_restricted_);
+    return vid - num_restricted_; 
+  }
+
   // return the initial positions of scripted vertices
   [[nodiscard]] DOUX_ALWAYS_INLINE 
   auto const& init_scripted_pos() const { return p0_; }
@@ -186,37 +193,41 @@ class MotiveBody : public Softbody {
 
 // -----------------------------------------------------------------------
 
-
-template <class Scene_, class GlobalSolver_, class ExtForce_, class DataProc_> 
-class ProjDynSim;
-
-// Extend to use constraints to generate internal forces, so they can be used
-// in PD framework.
-class PBDBody : public MotiveBody {
- template <class Scene_, class GlobalSolver_, class ExtForce_, class DataProc_> 
- friend class ProjDynSim;
-
- public:
- private:
-  // list of constraints for generating internal forces
-  std::vector<std::unique_ptr<CFunc>> cons_;        
-};
+class GlobalSolver;  // linear solver for the global step
+class ProjEnergy;
 
 class ProjDynBody : public MotiveBody {
+ friend class GlobalSolver;
+
  public:
   // the project (local solve) step
+  // This method apply the local solve step on all internal energy terms of the softbody
   void project();
 
   [[nodiscard]] DOUX_ALWAYS_INLINE uint32_t id() const { return id_; }
 
+  [[nodiscard]] DOUX_ALWAYS_INLINE 
+  const std::vector<std::unique_ptr<ProjEnergy>>& internal_energies() const { return e_; } 
+
  private:
-  // the ID will be set by `ProjDynScene`
+  // the ID will be set by `Glb`
   void set_id(uint32_t id) noexcept { id_ = id; }
 
  private:
   uint32_t id_;
   // the softbody's implicit energy terms
   std::vector<std::unique_ptr<ProjEnergy>> e_; 
+};
+
+// -----------------------------------------------------------------------
+
+// Extend to use constraints to generate internal forces, so they can be used
+// in PD framework.
+class PBDBody : public MotiveBody {
+ public:
+ private:
+  // list of constraints for generating internal forces
+  std::vector<std::unique_ptr<CFunc>> cons_;        
 };
 
 NAMESPACE_END(doux::pd)

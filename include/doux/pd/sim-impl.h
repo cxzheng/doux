@@ -44,25 +44,17 @@ size_t XPBDSim<Scene_, ExtForce_>::step() {
 // --------------------------------------------------------------------------------
 
 template <class Scene_, class GlobalSolver_, class ExtForce_, class DataProc_> 
-void ProjDynSim<Scene_, GlobalSolver_, ExtForce_, DataProc_>::init() {
-  size_t N = 0;
-  uint32_t id = 0;
-  for(auto& b : scene_.deformables()) {
-    N += b.num_free_vs();
-    b.set_id(id ++);
-  }
-}
-
-template <class Scene_, class GlobalSolver_, class ExtForce_, class DataProc_> 
 size_t ProjDynSim<Scene_, GlobalSolver_, ExtForce_, DataProc_>::step() {
+  auto& bodies = scene_.deformables();
+
   // timestep by external forces
   if constexpr (!std::is_same_v<ExtForce_, std::monostate>) {
-    for(auto& sb : scene_.deformables()) {
+    for(auto& sb : bodies) {
       ext_f_.apply(sb, status_.dt);
     }
   } else { 
     // If no external force
-    for(auto& sb : scene_.deformables()) {
+    for(auto& sb : bodies) {
       sb.predict_pos(status_.dt);
     }
   }
@@ -71,31 +63,39 @@ size_t ProjDynSim<Scene_, GlobalSolver_, ExtForce_, DataProc_>::step() {
 
   // timestep preset object motion
   const real_t t = status_.t();
-  for(auto& sb : scene_.deformables()) {
+  for(auto& sb : bodies) {
     sb.update_scripted(t);
   }
 
   scene_.update_colli_cons(); // update collision constraints
 
-  // load position data in a single vector
+  auto& cons = scene_.collision_constraints();
 
+  // load position data in a single vector
+  solver_.begin_iter(bodies, cons);
   for(auto i = 0;i < status_.num_iter;++ i) {
     // --- local solve ---
-    for(auto& sb : scene_.deformables()) {
-      sb.project();
-    }
-    auto const& cons = scene_.collision_constraints();
-    for(auto& cf : cons) {
-      cf.project();
-    }
+    // TODO: parallelize it
+    for(auto& sb : bodies) { sb.project(); }
+    for(auto& cf : cons) { cf->project(); }
 
     // --- global solve ---
+    solver_.begin_solve();
     // populate the RHS vector b
+    // TODO: parallelize
+    for(auto const& sb : bodies) {
+      for(auto const& e : sb.internal_energies()) {
+        e->update_global_solver_rhs(&solver);
+      }
+    }
+    for(auto& cf : cons) { cf->update_global_solver_rhs(&solver); }
     // solve Ax = b
+    solver_.solve();
+    solver_.store_pos(bodies);
   } // end subiter
 
   // update vel. and pos
-  for(auto& sb : scene_.deformables()) {
+  for(auto& sb : bodies) {
     sb.update_vel_pos(status_.dt);
   }
 

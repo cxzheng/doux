@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
+#include <unordered_map>
 #include "doux/shape/shape.h"
 
 NAMESPACE_BEGIN(doux::pd)
@@ -12,6 +13,7 @@ enum struct ProjEnergyType : uint32_t {
 };
 
 class ProjDynBody;
+class GlobalSolver;
 
 /*
  * abstract class for projective energy term
@@ -34,6 +36,10 @@ class ProjEnergy {
 
   virtual void project() = 0;
 
+  DOUX_ATTR(nonnull) virtual void register_global_solve_elems(GlobalSolver* solver) = 0;
+  // update the RHS in global system
+  DOUX_ATTR(nonnull) virtual void update_global_solve_rhs(GlobalSolver* solver) = 0;
+
  private:
   ProjDynBody*  body_;
   // stiffness of this energy term
@@ -49,8 +55,9 @@ class PlaneColliEnergy : public ProjEnergy {
   void project() override;
 
  private:
-  uint32_t v_;
+  size_t v_;
   Plane3<real_t>  plane_;
+  Vec3r  p_;              // the projected vertex position
 };
 
 /*
@@ -64,9 +71,12 @@ class TetCorotEnergy : public ProjEnergy {
   static constexpr ProjEnergyType Type = ProjEnergyType::TET_ASAP;
 
   void project() override;
+  void register_global_solve_elems(GlobalSolver* solver) override;
+  // update the RHS in global system
+  DOUX_ATTR(nonnull) void update_global_solve_rhs(GlobalSolver* solver) override;
 
  private:
-  uint32_t v_[4];
+  size_t v_[4];
 };
 
 NAMESPACE_END(doux::pd)

@@ -55,6 +55,11 @@ class ProjDynScene {
    [[nodiscard]] DOUX_ALWAYS_INLINE 
    const std::vector<ProjDynBody>& deformables() const { return sb_; }
 
+   [[nodiscard]] DOUX_ALWAYS_INLINE
+   const std::vector<std::unique_ptr<CFunc>>& collision_constraints() const {
+     return colli_cons_;
+   }
+
  private:
   /// a list of soft bodies to be simulated
   std::vector<ProjDynBody> sb_;

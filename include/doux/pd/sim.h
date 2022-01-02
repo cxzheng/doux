@@ -17,6 +17,7 @@ struct SimStats {
 
   /// physical timestep size
   real_t dt;
+  real_t dt2; // dt^2
 
   // ----------------------------------------------------------
 
@@ -27,7 +28,7 @@ struct SimStats {
   SimStats& operator=(const SimStats&) = delete;
   SimStats& operator=(SimStats&&) = delete;
 
-  SimStats(real_t dt, size_t niter) : num_iter{niter}, dt{dt} {
+  SimStats(real_t dt, size_t niter) : num_iter{niter}, dt{dt}, dt2{dt*dt} {
     assert(dt > 0 && niter > 0);
   }
 
@@ -63,6 +64,8 @@ class XPBDSim {
 /*
  * Projective dynamics simulator
  * 
+ * GlobalSolver_: Linear solver for the global step
+ * ExtForce_: model of external forces (e.g., gravity)
  * DataProc_: type for processing simulated data (e.g., storing into a file)
  */
 template <class Scene_, 
@@ -71,18 +74,39 @@ template <class Scene_,
           class DataProc_ = std::monostate> 
 class ProjDynSim {
  public:
+  ProjDynSim() = delete;
+
+  // -------------------------------------------------------
+  //  Constructors
+
+  // Construct without external force and data processing
+  ProjDynSim(SimStats s, Scene_ scene, GlobalSolver_ solver)
+      requires (std::same_as<ExtForce_, std::monostate> && std::same_as<DataProc_, std::monostate>) :
+      status_{s}, scene_{std::forward<Scene_>(scene)},
+      solver_{std::forward<GlobalSolver_>(solver)} {
+    solver_.init(scene_.deformables(), status_.dt2);
+  }
+
+  // Construct with external force and without data processing
+  ProjDynSim(SimStats s, Scene_ scene, GlobalSolver_ solver, ExtForce_ f)
+      requires (!std::same_as<ExtForce_, std::monostate> && std::same_as<DataProc_, std::monostate>) :
+      status_{s}, scene_{std::forward<Scene_>(scene)},
+      solver_{std::forward<GlobalSolver_>(solver)},
+      ext_f_{std::forward<ExtForce_>(f)} {
+    solver_.init(scene_.deformables(), status_.dt2);
+  }
+      
+
   /// Timestep the simulation
   size_t step();
-
- private:
-  // initialize the simulation
-  // e.g., allocate memory / data structure
-  void init(); 
 
  private:
   SimStats      status_;
   Scene_        scene_;   // simulation scene
   GlobalSolver_ solver_;
+
+  ExtForce_   ext_f_;       // external force
+  DataProc_   data_proc_;
 };
 
 #include "sim-impl.h"
