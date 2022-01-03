@@ -28,7 +28,7 @@ TEST(TestEigen, DISABLED_MapVec3) {
   }
 }
 
-TEST(TestEigen, ColwiseSum) {
+TEST(TestEigen, DISABLED_ColwiseSum) {
   using namespace doux;
   linalg::mat3_d_t m;
   m << 1, 2, 3, 4, 5, 6, 7, 8, 9;

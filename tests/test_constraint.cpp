@@ -8,7 +8,7 @@
 #if DOUX_USE_FLOAT64
   constexpr real_t Delta = 1E-8;
 #else
-  constexpr real_t Delta = 1E-4;
+  constexpr real_t Delta = 1E-3;
 #endif
 
 TEST(TestPDConstraint, DistCons) {
