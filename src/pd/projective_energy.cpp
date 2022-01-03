@@ -38,4 +38,5 @@ void TetCorotEnergy::register_global_solve_elems(GlobalSolver* solver) {
 
 void TetCorotEnergy::update_global_solve_rhs(GlobalSolver* solver) {
 }
+
 NAMESPACE_END(doux::pd)
