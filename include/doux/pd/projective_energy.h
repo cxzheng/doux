@@ -37,6 +37,8 @@ class ProjEnergy {
 
   virtual void project() = 0;
 
+  // evaluate the energy value
+  virtual real_t val() const = 0;
   /*
    * Add elements introduced by this energy term to the A matrix for global solve
    */
@@ -44,7 +46,7 @@ class ProjEnergy {
   // update the RHS in global system
   virtual void update_global_solve_rhs(GlobalSolver* solver) = 0;
 
- private:
+ protected:
   ProjDynBody*  body_;
   // stiffness of this energy term
   real_t stiffness_ {1};
@@ -86,6 +88,9 @@ class TetCorotEnergy : public ProjEnergy {
 
   // ------------------------------------------------
 
+  // evaluate the energy value
+  [[nodiscard]] real_t val() const override;
+
   void project() override;
   DOUX_ATTR(nonnull) void register_global_solve_elems(GlobalSolver* solver) override;
   // update the RHS in global system
@@ -93,8 +98,12 @@ class TetCorotEnergy : public ProjEnergy {
 
  private:
   size_t v_[4];
+  bool restricted_vtx_[4];
+
   // D^{-1} to compute the deformation gradient
   linalg::mat3_r_t D_inv_;
+  linalg::vec3_r_t d_sum_;
+  linalg::mat3_r_t r_;      // projected def. gradient (should be a rotational matrix)
 };
 
 NAMESPACE_END(doux::pd)

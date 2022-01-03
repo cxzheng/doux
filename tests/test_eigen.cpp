@@ -27,3 +27,12 @@ TEST(TestEigen, DISABLED_MapVec3) {
     std::cout << ss << std::endl;
   }
 }
+
+TEST(TestEigen, ColwiseSum) {
+  using namespace doux;
+  linalg::mat3_d_t m;
+  m << 1, 2, 3, 4, 5, 6, 7, 8, 9;
+  std::cout << m << std::endl;
+  linalg::vec3_d_t v = m.colwise().sum();
+  std::cout << v << std::endl;
+}

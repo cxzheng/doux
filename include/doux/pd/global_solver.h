@@ -46,15 +46,16 @@ class GlobalSolver {
   // these two methods will be called by ProjEnergy instances to 
   // fill in matrix elements according to their definitions
   void add_elem(const ProjDynBody* sb, size_t vid, real_t val) {
-    diag_(vtx_id(sb, vid)) += val;
+    diag_(vtx_id(sb, vid)) += val * dt2_;
   }
 
   void add_elem(const ProjDynBody* sb1, size_t vid1,
 			          const ProjDynBody* sb2, size_t vid2, real_t val) {
     auto const v1 = vtx_id(sb1, vid1);
     auto const v2 = vtx_id(sb2, vid2);
-    off_diag_map_[v1][v2] += val;
-    off_diag_map_[v2][v1] += val;
+    auto const vv = val * dt2_;
+    off_diag_map_[v1][v2] += vv;
+    off_diag_map_[v2][v1] += vv;
   }
   // -------------------------------------------------------------
 
